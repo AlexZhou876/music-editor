@@ -18,12 +18,13 @@ The following is a list of specific planned functionality:
 This application will be useful for anyone interested in music/composition, students of music, or composers. 
 ## Why is the project of interest to me? 
 this project is of interest primarily because I am interested in music, being a musician. 
-However, I've always been relatively poor at theory and improvisation. Programming an application 
+However, I've always struggled with theory and improvisation. Programming an application 
 like this will increase my understanding of music, and furthermore challenge and improve my programming 
 skills because of the specific demands of the domain. 
 
 ## User Stories
-- As a user, I want to be able to create a new note with a start time, end time, pitch, and volume, 
-adding it to the collection of existing notes.
-- As a user, I want to scroll to be able to see the full extent of my composition.
-- As a user, I want to be able to select a note and change its characteristics. 
+- As a user, I want to be able to create a new note(s) with a start time, time value, pitch, and volume, 
+adding it to the collection of existing notes in a given measure.
+- As a user, I must be able to view on demand the entire content of my composition.
+- (story specified except delete) As a user, I want to be able to select a note and change its characteristics, or possibly delete it.
+- (story specified) As a user, I must be able to specify the number of measures in my composition and add or remove measures. 
