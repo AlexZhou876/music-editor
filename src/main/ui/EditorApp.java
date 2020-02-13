@@ -178,8 +178,6 @@ public class EditorApp {
         Measure measure = null;
         int beat = 0;
         int pitch = 0;
-        int targetBeat = 0;
-        int targetPitch = 0;
         System.out.println("Enter, with spaces, the measure# where this note starts, the beat where the note starts"
                 + ", and the pitch of the note.");
         for (int i = 0; i < 3; i++) {
