@@ -6,7 +6,7 @@ public class Note {
     private int start;
     private int value;
     private int pitch;
-    private Dynamic dynamic;
+    //private Dynamic dynamic;
 
     // REQUIRES: start is a time value within the measure
     // EFFECTS: constructs a Note given a start time (beat), value, and pitch.
@@ -15,6 +15,7 @@ public class Note {
         this.value = value;
         this.pitch = pitch;
     }
+
     // EFFECTS: constructs a Note in a given measure, start time, value, and pitch
     // This may be improper!!!
     public Note(Measure measure, int start, int value, int pitch) {
@@ -50,6 +51,7 @@ public class Note {
     public void moveTime(int target) {
         start = target;
     }
+
     // REQUIRES: measure exists within the composition and target beat is within that measure
     // MODIFIES: this
     // EFFECTS: moves the start time of the note to beat #target of the given measure
@@ -57,34 +59,35 @@ public class Note {
         measure.addNote(this);
         this.moveTime(target);
     }
+
     // REQUIRES: a valid value for target (within pitch range of composition [1, 88])
     // MODIFIES: this
     // EFFECTS: the pitch of the note is set to target.
     public void movePitch(int target) {
         pitch = target;
     }
+/*
     // REQUIRES: a valid Dynamic
     // MODIFIES: this
     // EFFECTS: the dynamic of the note is set to target.
-
     public void changeDynamics(Dynamic target) {
 
     }
-
+*/
     // EFFECTS: returns the value of the note.
     public int getValue() {
         return value;
     }
+
     // EFFECTS: returns the starting beat of the note in terms of the whole composition.
     public int getStart() {
         return start;
     }
+
     // EFFECTS: returns the pitch of the note.
     public int getPitch() {
         return pitch;
     }
-
-
 
 
 }

@@ -24,6 +24,7 @@ public class Measure {
         }
         this.beatType = beatType;
     }
+
     // REQUIRES: beat is within length of measure, pitch within pitch range of composition
     // MODIFIES: this
     // EFFECTS: creates a new note, adding it to this measure at the given beat with value and pitch
@@ -31,36 +32,48 @@ public class Measure {
         Note newNote = new Note(beat, value, pitch);
         listOfNote.add(newNote);
     }
+
     // REQUIRES: a valid note
     // MODIFIES: this
     // EFFECTS: adds existing note to the measure //not at given beat because methods in Note class cover this.
     public void addNote(Note note) {
         listOfNote.add(note);
     }
+
     // EFFECTS: returns the number of beats in this measure
     public int getNumBeats() {
         return beatNumber;
     }
+
     // EFFECTS: returns the type of beats in this measure
     public int getBeatType() {
         return beatType;
     }
+
     // EFFECTS: returns the note at the given beat and pitch in the measure. If none, return null.
     public Note getNote(int beat, int pitch) {
-        for (Note note: listOfNote) {
+        for (Note note : listOfNote) {
             if (beat == note.getStart() && pitch == note.getPitch()) {
                 return note;
             }
         }
         return null;
     }
+
     // EFFECTS: returns string contents of the measure
     public String getContents() {
         String tempString = "";
-        for (Note n: listOfNote) {
+        for (Note n : listOfNote) {
             tempString = tempString + n.getStart() + " " + n.getValue() + " " + n.getPitch() + "\n";
         }
         return tempString;
+    }
+
+    // REQUIRES: then note passed is in measure
+    // MODIFIES: this
+    // EFFECTS: removes the note passed
+    public void removeNote(Note note) {
+        listOfNote.remove(note);
     }
 
 

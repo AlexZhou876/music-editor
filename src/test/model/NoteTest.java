@@ -2,7 +2,8 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NoteTest {
     Note note;
@@ -10,16 +11,18 @@ public class NoteTest {
 
     @BeforeEach
     public void runBefore() {
-        composition = new Composition(2, 4,4);
-        note = new Note(1,1,1);
+        composition = new Composition(2, 4, 4);
+        note = new Note(1, 1, 1);
         composition.getMeasure(1).addNote(note); //probably in note constructor???
     }
+
     @Test
     public void test3ParamConstructor() {
         assertEquals(1, note.getValue());
         assertEquals(1, note.getStart());
         assertEquals(1, note.getPitch());
     }
+
     /*
     @Test
     public void test4ParamConstructor() {
@@ -35,23 +38,25 @@ public class NoteTest {
 */
     @Test
     public void testResizeNote() {
-       note.resizeNote(4);
-       assertEquals(4,note.getValue());
-       assertEquals(4, composition.getMeasure(1).getNote(1,1).getValue());
+        note.resizeNote(4);
+        assertEquals(4, note.getValue());
+        assertEquals(4, composition.getMeasure(1).getNote(1, 1).getValue());
     }
 
     @Test
     public void testMoveTime1Param() {
         note.moveTime(3);
         assertEquals(3, note.getStart());
-        assertEquals(1, composition.getMeasure(1).getNote(3,1).getValue());
+        assertEquals(1, composition.getMeasure(1).getNote(3, 1).getValue());
     }
+
     @Test
     public void testMoveTime2Param() {
-        note.moveTime(composition.getMeasure(2),3);
+        note.moveTime(composition.getMeasure(2), 3);
         assertEquals(3, note.getStart());
-        assertEquals(1, composition.getMeasure(2).getNote(3,1).getValue());
+        assertEquals(1, composition.getMeasure(2).getNote(3, 1).getValue());
     }
+
     @Test
     public void testMovePitch() {
         note.movePitch(70);

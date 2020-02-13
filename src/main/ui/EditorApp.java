@@ -2,6 +2,7 @@ package ui;
 
 import model.Composition;
 import model.Measure;
+import model.Note;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ public class EditorApp {
     public EditorApp() {
         runEditor();
     }
+
     // MODIFIES: this
     // EFFECTS: processes user input
     private void runEditor() {
@@ -34,6 +36,7 @@ public class EditorApp {
         }
         System.out.println("You have quit the editor.");
     }
+
     // MODIFIES: this
     // EFFECTS: initializes composition
     private void init() {
@@ -49,18 +52,19 @@ public class EditorApp {
         piece = new Composition(numMeasures, beatNum, beatType);
         System.out.println("Your composition has been created.");
     }
+
     // EFFECTS: displays menu of command options
     private void displayOptions() {
         System.out.println("Input: Feature");
         System.out.println("1: Add Measures");
         System.out.println("2: Remove Measures");
         System.out.println("3: Add a Note to a Measure");
-        System.out.println("4: Edit or Delete an Existing Note");
-        System.out.println("5: See Entire Composition");
+        System.out.println("4: Edit an Existing Note");
+        System.out.println("5: Delete an Existing Note");
+        System.out.println("6: See Entire Composition");
         System.out.println("q: Quit");
     }
 
-    // REQUIRES: command is a valid command
     // MODIFIES: this
     // EFFECTS: makes changes to the model based on user commands
     private void doCommand(String command) {
@@ -71,13 +75,16 @@ public class EditorApp {
         } else if (command.equals("3")) {
             addNote();
         } else if (command.equals("4")) {
-            modifyNote();
+            editNote();
         } else if (command.equals("5")) {
+            deleteNote();
+        } else if (command.equals("6")) {
             printComposition();
         } else {
             System.out.println("Select a valid input.");
         }
     }
+
     // EFFECTS: allows the user to add measures.
     private void addMeasures() {
         int num = 0;
@@ -100,16 +107,29 @@ public class EditorApp {
         piece.addMeasures(num, pos, beatNum, beatType);
         System.out.println("Measures added.");
     }
+
     // EFFECTS: allows the user to remove measures.
     private void removeMeasures() {
+        Scanner tempInput = new Scanner(System.in);
         List<Integer> listOfPos = new ArrayList<>();
-        System.out.println("Enter, with spaces, the measure #s of the measures to remove.");
-        while (input.hasNext()) {
-            listOfPos.add(input.nextInt());
+        System.out.println("Enter, with spaces, the measure #s of the measures to remove, followed by \"fin\".");
+        while (true) {
+            String command = tempInput.next();
+            if (command.equals("fin")) {
+                break;
+            }
+//            if input on the same line separated by spaces: command.split(" ");
+            try {
+                listOfPos.add(Integer.parseInt(command));
+            } catch (NumberFormatException e) {
+                System.out.println("enter a valid number.");
+            }
+//            listOfPos.add(tempInput.nextInt());
         }
         piece.removeMeasures(listOfPos);
         System.out.println("Measures removed.");
     }
+
     // EFFECTS: allows the user to add a note.
     private void addNote() {
         int start = 0;
@@ -132,10 +152,52 @@ public class EditorApp {
         measure.addNewNote(start, value, pitch); //or could call Note constructor
         System.out.println("Note added.");
     }
-    // EFFECTS: allows the user to modify a note.
-    private void modifyNote() {
 
+    // EFFECTS: allows the user to delete a note.
+    private void deleteNote() {
+        Measure measure = null;
+        int beat = 0;
+        int pitch = 0;
+        System.out.println("Enter, with spaces, the measure# where this note starts, the beat where the note starts"
+                + ", and the pitch of the note.");
+        for (int i = 0; i < 3; i++) {
+            if (i == 0) {
+                measure = piece.getMeasure(input.nextInt());
+            } else if (i == 1) {
+                beat = input.nextInt();
+            } else if (i == 2) {
+                pitch = input.nextInt();
+            }
+        }
+        measure.removeNote(measure.getNote(beat, pitch));
+        System.out.println("Note removed.");
     }
+
+    // EFFECTS: allows user to edit a note
+    private void editNote() {
+        Measure measure = null;
+        int beat = 0;
+        int pitch = 0;
+        int targetBeat = 0;
+        int targetPitch = 0;
+        System.out.println("Enter, with spaces, the measure# where this note starts, the beat where the note starts"
+                + ", and the pitch of the note.");
+        for (int i = 0; i < 3; i++) {
+            if (i == 0) {
+                measure = piece.getMeasure(input.nextInt());
+            } else if (i == 1) {
+                beat = input.nextInt();
+            } else if (i == 2) {
+                pitch = input.nextInt();
+            }
+        }
+        Note tempNote = measure.getNote(beat, pitch);
+        System.out.println("Enter the target pitch (from 1 to 88).");
+        tempNote.movePitch(input.nextInt());
+        System.out.println("Enter the target beat (within the measure)");
+        tempNote.moveTime(input.nextInt());
+    }
+
     // EFFECTS: allows the user to print the entire composition.
     private void printComposition() {
         System.out.println(piece.getContents());
