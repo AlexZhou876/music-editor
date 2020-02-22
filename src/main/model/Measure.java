@@ -76,5 +76,9 @@ public class Measure {
         listOfNote.remove(note);
     }
 
+    public List<Note> getListOfNote() {
+        return listOfNote;
+    }
+
 
 }

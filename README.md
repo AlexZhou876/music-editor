@@ -26,5 +26,10 @@ skills because of the specific demands of the domain.
 - As a user, I want to be able to create a new note(s) with a start time, time value, pitch, and volume, 
 adding it to the collection of existing notes in a given measure.
 - As a user, I must be able to view on demand the entire content of my composition.
-- (story specified except delete) As a user, I want to be able to select a note and change its characteristics, or possibly delete it.
-- (story specified) As a user, I must be able to specify the number of measures in my composition and add or remove measures. 
+- As a user, I want to be able to select a note and change its characteristics, or possibly delete it.
+- As a user, I must be able to specify the number of measures in my composition and add or remove measures. 
+
+## Phase 2 Persistence User Stories
+- as a user, I must be able to save the current composition as a .mid file before quitting the program.
+- as a user, I must be able to load any previously saved composition after running the program (but not necessarily
+any given .mid file from anywhere).

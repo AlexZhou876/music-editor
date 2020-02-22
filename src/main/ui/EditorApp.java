@@ -107,24 +107,29 @@ public class EditorApp {
         piece.addMeasures(num, pos, beatNum, beatType);
         System.out.println("Measures added.");
     }
+    /*
+    Scanner tempInput = new Scanner(System.in);
+        List<Integer> inputList = new ArrayList<>();
+        String command = tempInput.nextLine();
+        String[] tempArray = command.split(" ");
+        for (String s: tempArray) {
+            inputList.add(Integer.parseInt(s));
+        }
+     */
 
     // EFFECTS: allows the user to remove measures.
     private void removeMeasures() {
         Scanner tempInput = new Scanner(System.in);
         List<Integer> listOfPos = new ArrayList<>();
-        System.out.println("Enter, with spaces, the measure #s of the measures to remove, followed by \"fin\".");
-        while (true) {
-            String command = tempInput.next();
-            if (command.equals("fin")) {
-                break;
-            }
-//            if input on the same line separated by spaces: command.split(" ");
+        System.out.println("Enter, with spaces, the measure #s of the measures to remove.");
+        String command = tempInput.nextLine();
+        String[] tempArray = command.split(" ");
+        for (int i = 0; i < tempArray.length; i++) {
             try {
-                listOfPos.add(Integer.parseInt(command));
+                listOfPos.add(Integer.parseInt(tempArray[i]));
             } catch (NumberFormatException e) {
-                System.out.println("enter a valid number.");
+                System.out.println("Enter only valid numbers.");
             }
-//            listOfPos.add(tempInput.nextInt());
         }
         piece.removeMeasures(listOfPos);
         System.out.println("Measures removed.");

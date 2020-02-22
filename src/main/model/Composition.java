@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 // represents an entire composition, which is a collection of measures. The order of measures in the list is the order
@@ -8,10 +9,14 @@ import java.util.List;
 public class Composition {
     private List<Measure> listOfMeasure;
     private int beatsPerMinute;
+    private int beatNum;
+    private int beatType;
 
     // REQUIRES: beatType is a power of 2
     // EFFECTS: instantiates a new composition with numMeasures measures, beatNum beats of type beatType per measure.
     public Composition(int numMeasures, int beatNum, int beatType) {
+        this.beatNum = beatNum;
+        this.beatType = beatType;
         listOfMeasure = new ArrayList<Measure>();
         for (int i = 0; i < numMeasures; i++) {
             Measure tempMeasure = new Measure(beatNum, beatType);
@@ -33,10 +38,11 @@ public class Composition {
     // MODIFIES: this
     // EFFECTS: removes the specified measures from composition.
     public void removeMeasures(List<Integer> listOfPos) {
+        // reverse list to remove last first
+        Collections.reverse(listOfPos);
         for (Integer pos : listOfPos) {
             listOfMeasure.remove(pos - 1);
         }
-
     }
 
     // EFFECTS: returns the number of measures in the composition.
@@ -70,6 +76,25 @@ public class Composition {
             tempString = tempString + "\n" + "Measure" + n + "\n" + listOfMeasure.get(i).getContents();
         }
         return tempString;
+    }
+
+    // REQUIRES: measure not null
+    // MODIFIES: this
+    // EFFECTS: add measure to end of composition
+    public void addMeasure(Measure measure) {
+        listOfMeasure.add(measure);
+    }
+
+    public int getBeatNum() {
+        return beatNum;
+    }
+
+    public int getBeatType() {
+        return beatType;
+    }
+
+    public List<Measure> getListOfMeasure() {
+        return listOfMeasure;
     }
 
 
