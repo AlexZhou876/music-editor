@@ -18,26 +18,30 @@ public class WriterTest {
 
     @BeforeEach
     public void runBefore() {
-        composition = new Composition(4, 4, 4);
+        writer = new Writer();
+        composition = new Composition(4, 3, 4);
         Note note = new Note(1, 1, 31);
-        Measure measure = new Measure(4, 4);
+        Measure measure = new Measure(3, 4);
         measure.addNote(note);
         composition.addMeasure(measure);
-        writer = new Writer();
+
+        note = new Note( 1, 1, 60);
+        composition.getMeasure(1).addNote(note);
     }
 
     @Test
     public void testWriteFile() {
         assertEquals(5, composition.getNumMeasures());
         // call
-        writer.writeFile(composition);
+        writer.writeFile(composition, "./data/saveFileTest.mid");
         // read back
-        Composition c = Reader.readFile(new File("./data/saveFile.mid"));
+        Composition c = Reader.readFile(new File("./data/saveFileTest.mid"));
         assertEquals(5, c.getNumMeasures());
-        assertEquals(4, c.getBeatNum());
+        assertEquals(3, c.getBeatNum());
         assertEquals(4, c.getBeatType());
         assertEquals(31, c.getMeasure(5).getNote(1, 31).getPitch());
         assertEquals(1, c.getMeasure(5).getNote(1, 31).getValue());
+        assertEquals(60, c.getMeasure(1).getNote(1, 60).getPitch());
     }
 
 }

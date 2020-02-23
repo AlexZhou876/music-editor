@@ -3,7 +3,10 @@ package ui;
 import model.Composition;
 import model.Measure;
 import model.Note;
+import persistence.Reader;
+import persistence.Writer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -12,6 +15,7 @@ import java.util.Scanner;
 public class EditorApp {
     private Scanner input;
     private Composition piece;
+    private static final String SAVE_FILE = "./data/musescoreExportTest.mid"; //./data/saveFile.mid
 
     // EFFECTS: runs the editor app.
     public EditorApp() {
@@ -23,8 +27,14 @@ public class EditorApp {
     private void runEditor() {
         boolean running = true;
         String command = null;
+        System.out.println("Enter 'l' to load or 'n' to start new file.");
         input = new Scanner(System.in);
-        init();
+        command = input.next();
+        if (command.equals("l")) {
+            loadComposition();
+        } else {
+            init();
+        }
         while (running) {
             displayOptions();
             command = input.next();
@@ -53,6 +63,20 @@ public class EditorApp {
         System.out.println("Your composition has been created.");
     }
 
+    // MODIFIES: this
+    // EFFECTS: loads the content from existing file.
+    private void loadComposition() {
+        piece = Reader.readFile(new File(SAVE_FILE));
+        System.out.println("Loaded.");
+    }
+
+    private void saveComposition() {
+        Writer writer = new Writer();
+        writer.writeFile(piece, SAVE_FILE);
+        System.out.println("Saved.");
+    }
+
+
     // EFFECTS: displays menu of command options
     private void displayOptions() {
         System.out.println("Input: Feature");
@@ -62,6 +86,7 @@ public class EditorApp {
         System.out.println("4: Edit an Existing Note");
         System.out.println("5: Delete an Existing Note");
         System.out.println("6: See Entire Composition");
+        System.out.println("7: Save Composition to File");
         System.out.println("q: Quit");
     }
 
@@ -80,6 +105,8 @@ public class EditorApp {
             deleteNote();
         } else if (command.equals("6")) {
             printComposition();
+        } else if (command.equals("7")) {
+            saveComposition();
         } else {
             System.out.println("Select a valid input.");
         }

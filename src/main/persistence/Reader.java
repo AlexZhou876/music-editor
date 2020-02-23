@@ -70,16 +70,18 @@ public class Reader {
         List<MidiEvent> noteEvents = midiEvents.stream().filter(noteEvent).collect(Collectors.toList());
         for (int i = 0; i < noteEvents.size(); i++) {
             int eventType = noteEvents.get(i).getMessage().getStatus() >> REST_OF_STATUS_BYTE;
-            if (eventType == NOTE_ON) {
+            int velocity = noteEvents.get(i).getMessage().getMessage()[2];
+            if (eventType == NOTE_ON && velocity != 0) { // velocity check here not technically necessary
                 byte pitch = noteEvents.get(i).getMessage().getMessage()[1];
                 int startBeat = (int) (noteEvents.get(i).getTick() / ticksPerBeat);
                 for (MidiEvent ne: noteEvents) {
                     int pairType =  ne.getMessage().getStatus() >> REST_OF_STATUS_BYTE;
+                    int velocity2 = ne.getMessage().getMessage()[2];
                     byte pitch2 = ne.getMessage().getMessage()[1];
-                    if (pairType == NOTE_OFF && pitch == pitch2) {
+                    if ((pairType == NOTE_OFF || velocity2 == 0) && pitch == pitch2) {
                         int value = (int) (ne.getTick() / ticksPerBeat - startBeat);
                         int pianoKey = pitch - MIDI_A0_VALUE;
-                        output.add(new Note(startBeat, value, pianoKey));
+                        output.add(new Note(startBeat + 1, value, pianoKey)); //+1: see Writer.getNoteEvents
                         break;
                     }
                 }
@@ -103,14 +105,14 @@ public class Reader {
                 output.get(quotient).addNote(n);
             } else if (quotient >= output.size() && remainder != 0) {
                 int outputInitSize = output.size();
-                for (int i = 0; i <= (quotient - outputInitSize) + 1; i++) {
+                for (int i = 0; i < (quotient - outputInitSize) + 1; i++) {
                     output.add(new Measure(beatNum, beatType));
-                }
-                output.get(quotient + 1).addNote(n);
+                } // changed i <= to i < to prevent from adding one more measure than necessary
+                output.get(quotient).addNote(n); // changed from quotient + 1 to quotient
             } else if (remainder != 0) {
-                output.get(quotient + 1).addNote(n);
+                output.get(quotient).addNote(n); // changed from quotient + 1 to quotient
             } else {
-                output.get(quotient).addNote(n);
+                output.get(quotient).addNote(n); // !!! probably should replace else if case with this else case
             }
         }
         return output;
@@ -118,7 +120,7 @@ public class Reader {
 
     // EFFECTS: returns a composition containing the list of measures in the same order.
     private static Composition parseMeasures(List<Measure> listOfMeasure) {
-        Composition composition = new Composition(0, 4,4);
+        Composition composition = new Composition(0, beatNum, beatType);
         for (Measure m: listOfMeasure) {
             composition.addMeasure(m);
         }
@@ -132,8 +134,9 @@ public class Reader {
         for (MidiEvent me: midiEvents) {
             byte[] message = me.getMessage().getMessage();
             if (message[1] == TIME_SIGNATURE_META_TYPE) {
-                beatNum = message[3];
+                beatNum = message[3]; //3
                 beatType = (int) Math.pow(2, message[4]);
+                break;
             }
         }
     }
@@ -144,10 +147,13 @@ public class Reader {
     private static void convertNoteStarts(List<Measure> measures) {
         for (int i = 0; i < measures.size(); i++) {
             for (Note n: measures.get(i).getListOfNote()) {
-                n.moveTime(n.getStart() - (i - 1) * beatNum);
-            }
+                if (n.getStart() % beatNum != 0) {
+                    n.moveTime(n.getStart() % beatNum);
+                } else {
+                    n.moveTime(beatNum);
+                }
+                //n.moveTime(n.getStart() - (i - 1) * beatNum);
+            } // bug fix:
         }
     }
 }
-
-

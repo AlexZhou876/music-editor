@@ -18,7 +18,7 @@ public class Writer {
     private int ticksPerBeat = 24;
     private static int ARBITRARY_BUFFER = 10;
 
-    public void writeFile(Composition composition) {
+    public void writeFile(Composition composition, String path) {
         int beatNum = composition.getBeatNum();
         int beatType = composition.getBeatType();
         try {
@@ -30,7 +30,7 @@ public class Writer {
             sortEvents(noteEvents);
             addEvents(track, noteEvents);
             addEndOfTrackEvent(track);
-            File file = new File("./data/saveFile.mid");
+            File file = new File(path);
             MidiSystem.write(sequence, 1, file);
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
@@ -81,11 +81,12 @@ public class Writer {
                 noteOn.setMessage(0x90, pitch, 0x60);
                 ShortMessage noteOff = new ShortMessage();
                 noteOff.setMessage(0x80, pitch, 0);
-                long startTime = ((i - 1) * beatNum + n.getStart()) * ticksPerBeat;
-                long endTime = ((i - 1) * beatNum + n.getStart() + n.getValue()) * ticksPerBeat;
+                long startTime = (i  * beatNum + n.getStart()) * ticksPerBeat - ticksPerBeat;
+                long endTime = (i * beatNum + n.getStart() + n.getValue()) * ticksPerBeat - ticksPerBeat;
+                // - ticksPerBeat to adjust since beat 1 in midi is tick 0, not tick ticksPerBeat
                 output.add(new MidiEvent(noteOn, startTime));
                 output.add(new MidiEvent(noteOff, endTime));
-            }
+            } // changed to i from (i-1)
         }
         return output;
     }
