@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class EditorApp {
     private Scanner input;
     private Composition piece;
-    private static final String SAVE_FILE = "./data/musescoreExportTest.mid"; //./data/saveFile.mid
+    private static final String SAVE_FILE = "./data/saveFile.mid";
 
     // EFFECTS: runs the editor app.
     public EditorApp() {

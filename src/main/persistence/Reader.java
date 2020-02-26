@@ -63,11 +63,11 @@ public class Reader {
 
     // REQUIRES: non-empty list of midi events.
     // EFFECTS: returns list of notes corresponding to note-on and note-off events.
+    // note: sometimes programs may end a note slightly before its nominal value. To deal with this, round up the value
+    // to nearest int instead of casting.
     private static List<Note> midiEventsToNotes(List<MidiEvent> midiEvents) {
         List<Note> output = new ArrayList<>();
-        Predicate<MidiEvent> noteEvent = me -> me.getMessage().getStatus() >> REST_OF_STATUS_BYTE == NOTE_ON
-                || me.getMessage().getStatus() >> REST_OF_STATUS_BYTE == NOTE_OFF;
-        List<MidiEvent> noteEvents = midiEvents.stream().filter(noteEvent).collect(Collectors.toList());
+        List<MidiEvent> noteEvents = filterEvents(midiEvents);
         for (int i = 0; i < noteEvents.size(); i++) {
             int eventType = noteEvents.get(i).getMessage().getStatus() >> REST_OF_STATUS_BYTE;
             int velocity = noteEvents.get(i).getMessage().getMessage()[2];
@@ -79,7 +79,7 @@ public class Reader {
                     int velocity2 = ne.getMessage().getMessage()[2];
                     byte pitch2 = ne.getMessage().getMessage()[1];
                     if ((pairType == NOTE_OFF || velocity2 == 0) && pitch == pitch2) {
-                        int value = (int) (ne.getTick() / ticksPerBeat - startBeat);
+                        int value = (int) Math.round(((double) ne.getTick() / (double) ticksPerBeat)) - startBeat;
                         int pianoKey = pitch - MIDI_A0_VALUE;
                         output.add(new Note(startBeat + 1, value, pianoKey)); //+1: see Writer.getNoteEvents
                         break;
@@ -90,6 +90,14 @@ public class Reader {
         return output;
     }
 
+    // REQUIRES: unfiltered not empty
+    // EFFECTS: returns filtered list of midi events only containing note events
+    private static List<MidiEvent> filterEvents(List<MidiEvent> unfiltered) {
+        Predicate<MidiEvent> noteEvent = me -> me.getMessage().getStatus() >> REST_OF_STATUS_BYTE == NOTE_ON
+                || me.getMessage().getStatus() >> REST_OF_STATUS_BYTE == NOTE_OFF;
+        return unfiltered.stream().filter(noteEvent).collect(Collectors.toList());
+    }
+
     // REQUIRES: notes not empty
     // EFFECTS: returns a list of only enough measures to properly allocate notes based on their starts.
     private static List<Measure> allocateNotes(List<Note> notes) {
@@ -97,22 +105,22 @@ public class Reader {
         for (Note n: notes) {
             int quotient = n.getStart() / beatNum;
             int remainder = n.getStart() % beatNum;
-            if (quotient > output.size() && remainder == 0) {
+            if (quotient > output.size() && remainder == 0) { // case for no measure, note on last beat
                 int outputInitSize = output.size();
                 for (int i = 0; i <= quotient - outputInitSize; i++) {
                     output.add(new Measure(beatNum, beatType));
                 }
                 output.get(quotient).addNote(n);
-            } else if (quotient >= output.size() && remainder != 0) {
+            } else if (quotient >= output.size() && remainder != 0) { // case for no measure, note not on last beat
                 int outputInitSize = output.size();
                 for (int i = 0; i < (quotient - outputInitSize) + 1; i++) {
                     output.add(new Measure(beatNum, beatType));
                 } // changed i <= to i < to prevent from adding one more measure than necessary
                 output.get(quotient).addNote(n); // changed from quotient + 1 to quotient
-            } else if (remainder != 0) {
+            } else if (remainder != 0) { // case for measure exists, note not on last beat
                 output.get(quotient).addNote(n); // changed from quotient + 1 to quotient
-            } else {
-                output.get(quotient).addNote(n); // !!! probably should replace else if case with this else case
+            } else { // case for measure exists, note is on last beat
+                output.get(quotient - 1).addNote(n); // changed to quotient - 1
             }
         }
         return output;
@@ -130,15 +138,18 @@ public class Reader {
     // REQUIRES: there is exactly one time signature meta event in the list of events.
     // MODIFIES: this
     // EFFECTS: assigns value of time signature numbers to time signature variables
+    // note: method looks for time signature meta-message, if none, then 4/4 by default
     private static void getTimeSignature(List<MidiEvent> midiEvents) {
         for (MidiEvent me: midiEvents) {
             byte[] message = me.getMessage().getMessage();
             if (message[1] == TIME_SIGNATURE_META_TYPE) {
                 beatNum = message[3]; //3
                 beatType = (int) Math.pow(2, message[4]);
-                break;
+                return;
             }
         }
+        beatNum = 4;
+        beatType = 4;
     }
 
     // REQUIRES: non empty-list
