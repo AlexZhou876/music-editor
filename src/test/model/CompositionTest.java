@@ -84,5 +84,18 @@ class CompositionTest {
         assertEquals(1, piece.getNumMeasures());
     }
 
+    @Test
+    public void testGetContents() {
+        String output = piece.getContents();
+        assertEquals("" + "\n" + "Measure" + 1 + "\n" + "\n" + "Measure" + 2 + "\n"
+                + "\n" + "Measure" + 3 + "\n", output);
+
+        piece.addMeasures(1, 3, 4, 4);
+        output = piece.getContents();
+        assertEquals("" + "\n" + "Measure" + 1 + "\n" + "\n" + "Measure" + 2 + "\n"
+                + "\n" + "Measure" + 3 + "\n" + "\n" + "Measure" + 4 + "\n", output);
+
+    }
+
 
 }

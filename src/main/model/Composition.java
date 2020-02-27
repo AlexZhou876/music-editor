@@ -63,10 +63,11 @@ public class Composition {
     public Measure getMeasure(int pos) {
         return listOfMeasure.get(pos - 1);
     }
-
+/*
     public int getPosOfMeasure(Measure measure) {
         return 0;
     }
+*/
 
     // EFFECTS: return formatted content of composition !!! test
     public String getContents() {

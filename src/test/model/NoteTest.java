@@ -3,7 +3,7 @@ package model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NoteTest {
     Note note;
@@ -61,6 +61,12 @@ public class NoteTest {
     public void testMovePitch() {
         note.movePitch(70);
         assertEquals(70, note.getPitch());
+    }
+
+    @Test
+    public void testGetNoteReturnsNull() {
+        Note note = composition.getMeasure(1).getNote(2, 2);
+        assertNull(note);
     }
 
 

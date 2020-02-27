@@ -107,10 +107,10 @@ public class Reader {
             int remainder = n.getStart() % beatNum;
             if (quotient > output.size() && remainder == 0) { // case for no measure, note on last beat
                 int outputInitSize = output.size();
-                for (int i = 0; i <= quotient - outputInitSize; i++) {
+                for (int i = 0; i < quotient - outputInitSize; i++) { // used to be <=
                     output.add(new Measure(beatNum, beatType));
                 }
-                output.get(quotient).addNote(n);
+                output.get(quotient - 1).addNote(n); // used to be quotient
             } else if (quotient >= output.size() && remainder != 0) { // case for no measure, note not on last beat
                 int outputInitSize = output.size();
                 for (int i = 0; i < (quotient - outputInitSize) + 1; i++) {

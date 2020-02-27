@@ -18,10 +18,11 @@ public class Note {
 
     // EFFECTS: constructs a Note in a given measure, start time, value, and pitch
     // This may be improper!!!
+    /*
     public Note(Measure measure, int start, int value, int pitch) {
         measure.addNewNote(start, value, pitch);
     }
-
+*/
 
     // REQUIRES: a valid value for target (>0 and fits within time range of composition)
     // MODIFIES: this

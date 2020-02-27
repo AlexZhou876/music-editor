@@ -76,7 +76,6 @@ public class EditorApp {
         System.out.println("Saved.");
     }
 
-
     // EFFECTS: displays menu of command options
     private void displayOptions() {
         System.out.println("Input: Feature");
@@ -127,7 +126,7 @@ public class EditorApp {
                 pos = input.nextInt();
             } else if (i == 2) {
                 beatNum = input.nextInt();
-            } else if (i == 3) {
+            } else {
                 beatType = input.nextInt();
             }
         }
@@ -177,7 +176,7 @@ public class EditorApp {
                 start = input.nextInt();
             } else if (i == 2) {
                 value = input.nextInt();
-            } else if (i == 3) {
+            } else {
                 pitch = input.nextInt();
             }
         }
@@ -197,7 +196,7 @@ public class EditorApp {
                 measure = piece.getMeasure(input.nextInt());
             } else if (i == 1) {
                 beat = input.nextInt();
-            } else if (i == 2) {
+            } else {
                 pitch = input.nextInt();
             }
         }
@@ -217,12 +216,12 @@ public class EditorApp {
                 measure = piece.getMeasure(input.nextInt());
             } else if (i == 1) {
                 beat = input.nextInt();
-            } else if (i == 2) {
+            } else {
                 pitch = input.nextInt();
             }
         }
         Note tempNote = measure.getNote(beat, pitch);
-        System.out.println("Enter the target pitch (from 1 to 88).");
+        System.out.println("Enter the target pitch (from 0 to 88).");
         tempNote.movePitch(input.nextInt());
         System.out.println("Enter the target beat (within the measure)");
         tempNote.moveTime(input.nextInt());
