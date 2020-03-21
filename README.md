@@ -1,5 +1,9 @@
 # My Personal Project
 
+## How to use
+run Main.main and see the window. For now, to add a note, press the mouse and hold to the left of the leftmost 
+vertical line (barline). Drag the mouse to change the length of the note. Release to finish placing the note. 
+
 ## What Will the Application Do? 
 My project will be a music visualization and composition application. 
 It will allow users to quickly sketch and further develop musical compositions in a 2d environment 
@@ -33,3 +37,10 @@ adding it to the collection of existing notes in a given measure.
 - as a user, I must be able to save the current composition as a .mid file before quitting the program.
 - as a user, I must be able to load any previously saved composition after running the program (but not necessarily
 any given .mid file from anywhere).
+
+## Phase 3 GUI User Stories
+- selection of notes or a group of notes (using box select). Must be able to move the selected notes
+- copy and pasting of selected notes.
+- ability to pan and zoom in the 2d environment where the piece is displayed.
+- ability to play the composition from a starting point.
+

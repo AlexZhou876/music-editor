@@ -1,13 +1,27 @@
 package model;
 
+import ui.sound.MidiSynth;
+
+import java.awt.*;
+import static model.Composition.*;
+
 // class representing a music note, with starting time with respect to beats in the measure, note value
 // with respect to beats in the measure, and pitch [1,88]
 public class Note {
+    public static final int PLACEHOLDER_VOLUME = 100;
+    public static final int PLACEHOLDER_INSTRUMENT = 1;
+    public static final int MIDI_A0_VALUE = 21;
+    public static final Color PLAYING = new Color(230, 158, 60);
+    private Measure measure; //bidirectional association
     private int start;
     private int value;
     private int pitch;
+    private int globalStart;
+    private boolean selected;
+    private MidiSynth midiSynth;
     //private Dynamic dynamic;
 
+    // this constructor is obsolete
     // REQUIRES: start is a time value within the measure
     // EFFECTS: constructs a Note given a start time (beat), value, and pitch.
     public Note(int start, int value, int pitch) {
@@ -16,13 +30,84 @@ public class Note {
         this.pitch = pitch;
     }
 
-    // EFFECTS: constructs a Note in a given measure, start time, value, and pitch
-    // This may be improper!!!
-    /*
-    public Note(Measure measure, int start, int value, int pitch) {
-        measure.addNewNote(start, value, pitch);
+    // EFFECTS: constructs a Note in a given measure, global start time, value, and pitch
+    public Note(Measure measure, int start, int value, int pitch, MidiSynth midiSynth) {
+        this.globalStart = start;
+        this.value = value;
+        this.pitch = pitch;
+        selected = false;
+        this.midiSynth = midiSynth;
+        this.measure = measure;
+        measure.addNote(this);
     }
-*/
+
+    // EFFECTS: draws this note on the composition, if selected, note is filled in,
+    // otherwise it is white.
+    public void draw(Graphics graphics) {
+        int x = (globalStart - 1) * BEAT_WIDTH;
+        int y = (88 - pitch) * SEMITONE_HEIGHT;
+        int height = y + SEMITONE_HEIGHT;
+        int width = x + value * BEAT_WIDTH;
+        Color save = graphics.getColor();
+        if (selected) {
+            graphics.setColor(PLAYING);
+        } else {
+            graphics.setColor(Color.white);
+        }
+        graphics.fillRect(x, y, width, height);
+        graphics.setColor(save);
+        graphics.drawRect(x, y, width, height);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: assigns given measure to this note
+    public void assignToMeasure(Measure measure) {
+        if (!this.measure.equals(measure)) {
+            this.measure = measure;
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS:  selects this Note, plays associated sound
+    // from SimpleDrawingPlayer (modified)
+    public void selectAndPlay() {
+        if (!selected) {
+            selected = true;
+            play();
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS:  unselects this Note, stops playing associated sound
+    // from SimpleDrawingPlayer (modified)
+    public void unselectAndStopPlaying() {
+        if (selected) {
+            selected = false;
+            stopPlaying();
+        }
+    }
+
+    // EFFECTS: starts playing the shape, sound depends on coordinates
+    private void play() {
+        midiSynth.play(PLACEHOLDER_INSTRUMENT, coordConvert(pitch), PLACEHOLDER_VOLUME);
+    }
+
+    // EFFECTS: stops playing this note
+    private void stopPlaying() {
+        midiSynth.stop(PLACEHOLDER_INSTRUMENT, coordConvert(pitch));
+    }
+
+    // EFFECTS: convert model pitch to midi pitch.
+    private int coordConvert(int pitch) {
+        return MIDI_A0_VALUE + pitch;
+    }
+
+    // REQUIRES: x coordinate of point > x coordinate of the note
+    // MODIFIES: this
+    // EFFECTS: sets the right edge of note to the indicated value
+    public void setBounds(Point bottomRight) {
+        value = ((int) (bottomRight.x - globalStart * BEAT_WIDTH)) / BEAT_WIDTH + 1;
+    }
 
     // REQUIRES: a valid value for target (>0 and fits within time range of composition)
     // MODIFIES: this

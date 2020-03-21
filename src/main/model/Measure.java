@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,14 @@ public class Measure {
         this.beatType = beatType;
     }
 
+    // EFFECTS: draws all notes in this measure.
+    public void draw(Graphics graphics) {
+        for (Note note : listOfNote) {
+            note.draw(graphics);
+        }
+    }
+
+    // this method may be obsolete
     // REQUIRES: beat is within length of measure, pitch within pitch range of composition
     // MODIFIES: this
     // EFFECTS: creates a new note, adding it to this measure at the given beat with value and pitch
@@ -33,11 +42,25 @@ public class Measure {
         listOfNote.add(newNote);
     }
 
-    // REQUIRES: a valid note
+
     // MODIFIES: this
     // EFFECTS: adds existing note to the measure //not at given beat because methods in Note class cover this.
     public void addNote(Note note) {
-        listOfNote.add(note);
+        if (!listOfNote.contains(note)) {
+            listOfNote.add(note);
+            note.assignToMeasure(this);
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: removes the note passed
+    // this remove method has no partner in Note because there cannot be
+    // a note with no measure. This method is for note deletion, after which the note obj
+    // should become inactive.
+    public void removeNote(Note note) {
+        if (listOfNote.contains(note)) {
+            listOfNote.remove(note);
+        }
     }
 
     // EFFECTS: returns the number of beats in this measure
@@ -69,12 +92,7 @@ public class Measure {
         return tempString;
     }
 
-    // REQUIRES: then note passed is in measure
-    // MODIFIES: this
-    // EFFECTS: removes the note passed
-    public void removeNote(Note note) {
-        listOfNote.remove(note);
-    }
+
 
     public List<Note> getListOfNote() {
         return listOfNote;
