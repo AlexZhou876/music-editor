@@ -127,6 +127,7 @@ public class Reader {
     }
 
     // EFFECTS: returns a composition containing the list of measures in the same order.
+    // update: maybe assign each measure to the composition.
     private static Composition parseMeasures(List<Measure> listOfMeasure) {
         Composition composition = new Composition(0, beatNum, beatType);
         for (Measure m: listOfMeasure) {

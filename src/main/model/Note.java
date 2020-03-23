@@ -41,13 +41,81 @@ public class Note {
         measure.addNote(this);
     }
 
+    // EFFECTS: returns true if the note contains the given point, false otherwise.
+    // !!! code duplication with draw
+    public boolean contains(Point point) {
+        int pointX = point.x;
+        int pointY = point.y;
+        int leftEdge = modelTimeToXCoord(globalStart);
+        int topEdge = (88 - pitch) * SEMITONE_HEIGHT;
+        int bottomEdge = pitchToYCoord(pitch);
+        int rightEdge = modelTimeToXCoord(globalStart + value);
+        return pointX >= leftEdge && pointX <= rightEdge && pointY >= topEdge && pointY <= bottomEdge;
+    }
+
+    // EFFECTS: returns true if the x coordinate is within bounds of note; false otherwise
+    public boolean containsX(int x) {
+        return x >= modelTimeToXCoord(globalStart) && x <= modelTimeToXCoord(globalStart + value);
+    }
+
+    // MODIFIES: this
+    // EFFECTS:  If the point dragged to indicates a different location for the note selected than where it already is,
+    //           move the note to that location. Manage the playing of the note during the transition.
+    public void move(Point draggedTo) {
+        boolean noteChanges;
+        /*
+        noteChanges = Math.abs(draggedTo.getY() - pitchToYCoord(pitch)) > SEMITONE_HEIGHT
+                || Math.abs(draggedTo.getX() - modelTimeToXCoord(globalStart)) > BEAT_WIDTH;
+
+         */
+        int newGlobalStart = 1 + ((int) draggedTo.getX()) / BEAT_WIDTH;
+        int newPitch = 88 - ((int) draggedTo.getY()) / SEMITONE_HEIGHT;
+        noteChanges = newGlobalStart != globalStart || newPitch != pitch;
+        if (noteChanges && inBounds(newGlobalStart, newPitch)) {
+            changeAssignedMeasure(newGlobalStart);
+            stopPlaying();
+            globalStart = newGlobalStart;
+            pitch = newPitch;
+            play();
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: if the note has been moved to a different measure, assign this note to that measure.
+    private void changeAssignedMeasure(int newGlobalStart) {
+        int leftEndPoint = measure.getGlobalStart();
+        int rightEndPoint = leftEndPoint + measure.getNumBeats() - 1;
+        if (newGlobalStart > rightEndPoint) {
+            assignToMeasure(measure.getNext());
+        } else if (newGlobalStart < leftEndPoint) {
+            assignToMeasure(measure.getLast());
+        }
+    }
+
+
+    // EFFECTS: returns true if the starting time and pitch given are in the composition.
+    private boolean inBounds(int start, int pitch) {
+        int totalBeats = measure.getComposition().getNumBeats();
+        return start <= totalBeats && start >= 1 && pitch <= 88 && pitch >= 1;
+    }
+
+    // EFFECTS: converts model pitch values to y screen coordinate
+    private int pitchToYCoord(int pitch) {
+        return (88 - pitch) * SEMITONE_HEIGHT + SEMITONE_HEIGHT;
+    }
+
+    // EFFECTS: converts model beat values to x screen coordinate
+    private int modelTimeToXCoord(int beat) {
+        return (beat - 1) * BEAT_WIDTH;
+    }
+
     // EFFECTS: draws this note on the composition, if selected, note is filled in,
     // otherwise it is white.
     public void draw(Graphics graphics) {
         int x = (globalStart - 1) * BEAT_WIDTH;
         int y = (88 - pitch) * SEMITONE_HEIGHT;
-        int height = y + SEMITONE_HEIGHT;
-        int width = x + value * BEAT_WIDTH;
+        int height = SEMITONE_HEIGHT;
+        int width = value * BEAT_WIDTH;
         Color save = graphics.getColor();
         if (selected) {
             graphics.setColor(PLAYING);
@@ -89,24 +157,24 @@ public class Note {
 
     // EFFECTS: starts playing the shape, sound depends on coordinates
     private void play() {
-        midiSynth.play(PLACEHOLDER_INSTRUMENT, coordConvert(pitch), PLACEHOLDER_VOLUME);
+        midiSynth.play(PLACEHOLDER_INSTRUMENT, modelPitchToMidiPitch(pitch), PLACEHOLDER_VOLUME);
     }
 
     // EFFECTS: stops playing this note
     private void stopPlaying() {
-        midiSynth.stop(PLACEHOLDER_INSTRUMENT, coordConvert(pitch));
+        midiSynth.stop(PLACEHOLDER_INSTRUMENT, modelPitchToMidiPitch(pitch));
     }
 
     // EFFECTS: convert model pitch to midi pitch.
-    private int coordConvert(int pitch) {
+    private int modelPitchToMidiPitch(int pitch) {
         return MIDI_A0_VALUE + pitch;
     }
 
-    // REQUIRES: x coordinate of point > x coordinate of the note
+    // REQUIRES: x coordinate of point > x coordinate of the note (remove)
     // MODIFIES: this
     // EFFECTS: sets the right edge of note to the indicated value
-    public void setBounds(Point bottomRight) {
-        value = ((int) (bottomRight.x - globalStart * BEAT_WIDTH)) / BEAT_WIDTH + 1;
+    public void setBounds(double x) {
+        value = ((int) (x - globalStart * BEAT_WIDTH)) / BEAT_WIDTH + 1;
     }
 
     // REQUIRES: a valid value for target (>0 and fits within time range of composition)
@@ -170,9 +238,17 @@ public class Note {
         return start;
     }
 
+    public int getGlobalStart() {
+        return globalStart;
+    }
+
     // EFFECTS: returns the pitch of the note.
     public int getPitch() {
         return pitch;
+    }
+
+    public Measure getMeasure() {
+        return measure;
     }
 
 

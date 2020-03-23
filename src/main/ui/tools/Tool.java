@@ -4,6 +4,7 @@ import model.Composition;
 import ui.GraphicalEditorApp;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public abstract class Tool {
@@ -64,6 +65,9 @@ public abstract class Tool {
 
     // EFFECTS: nothing
     public void mousePressed(MouseEvent e) { }
+
+    // EFFECTS: nothing
+    public void keyTyped(KeyEvent ke) {}
 
 
 

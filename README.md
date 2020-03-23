@@ -1,8 +1,18 @@
 # My Personal Project
 
-## How to use
-run Main.main and see the window. For now, to add a note, press the mouse and hold to the left of the leftmost 
-vertical line (barline). Drag the mouse to change the length of the note. Release to finish placing the note. 
+## Instructions for Grader
+This is a music editor. To use, run Main.main. It is mouse interactive and graphically displays your input.
+- to add a note: click on the button on the toolbar labelled "Add Note".
+- press the mouse down within the bounds of a measure. A note appears.
+- while holding, drag the mouse to the right and left to change the length.
+- release the mouse to finish placing.
+you can also add measures to the composition.
+- to add a measure: click on the button labelled "Add Measures" 
+- enter a valid number
+- see the measures appear
+The visual component is clearly displayed. The audio component is triggered by hitting the Play! button.
+Unfortunately, I was unable to adapt persistence for this phase. Thank you for using. 
+
 
 ## What Will the Application Do? 
 My project will be a music visualization and composition application. 
@@ -39,8 +49,16 @@ adding it to the collection of existing notes in a given measure.
 any given .mid file from anywhere).
 
 ## Phase 3 GUI User Stories
+- be able to play back the whole composition
+- no others except preserving the functionality of earlier user stories
+
+
+
+## Wish List
 - selection of notes or a group of notes (using box select). Must be able to move the selected notes
 - copy and pasting of selected notes.
 - ability to pan and zoom in the 2d environment where the piece is displayed.
 - ability to play the composition from a starting point.
-
+- ability to undo last action
+- have text annotations, including title and credits at the beginning
+- separate piece into different voices, like layers in an image editing app

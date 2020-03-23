@@ -16,6 +16,7 @@ public class Composition extends JPanel {
     private int beatType;
     private int barWidth; // implement later
 
+    private int playLineColumn;
     public static final int BAR_WIDTH = 200;
     public static final int BEAT_WIDTH = 50;
     public static final int SEMITONE_HEIGHT = 10;
@@ -29,12 +30,62 @@ public class Composition extends JPanel {
         this.beatType = beatType;
         listOfMeasure = new ArrayList<Measure>();
         for (int i = 0; i < numMeasures; i++) {
-            Measure tempMeasure = new Measure(beatNum, beatType);
+            Measure tempMeasure = new Measure(beatNum, beatType, this);
             listOfMeasure.add(tempMeasure);
         }
     }
 
+    // EFFECTS: gets the end of the composition in screen x coordinate.
+    public int getEnd() {
+        int totalBeats = this.getNumBeats();
+        return totalBeats * BEAT_WIDTH;
+    }
+
+    public void setPlayLineColumn(int target) {
+        playLineColumn = target;
+    }
+
+    // EFFECTS: returns the global start beat of the given measure.
+    public int getGlobalStartOf(Measure measure) {
+        int output = 0;
+        for (Measure m: listOfMeasure) {
+            if (!m.equals(measure)) {
+                output = output + m.getNumBeats();
+            } else {
+                output = output + 1;
+                return output;
+            }
+        }
+        return 0; //this should throw an exception probably
+    }
+
+    // EFFECTS: returns the note at a given point in composition, if any.
+    public Note getNoteAtPoint(Point point) {
+        for (Measure measure : listOfMeasure) {
+            for (Note note : measure.getListOfNote()) {
+                if (note.contains(point)) {
+                    return note;
+                }
+            }
+        }
+        return null;
+    }
+
+    // EFFECTS: returns list of notes at a given column in the composition.
+    public List<Note> getNotesAtColumn(int x) {
+        List<Note> notesAtColumn = new ArrayList<Note>();
+        for (Measure m: listOfMeasure) {
+            for (Note note : m.getListOfNote()) {
+                if (note.containsX(x)) {
+                    notesAtColumn.add(note);
+                }
+            }
+        }
+        return notesAtColumn;
+    }
+
     // EFFECTS: paints grid, playing line, notes in composition.
+    // calls to repaint() get here
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
@@ -47,13 +98,20 @@ public class Composition extends JPanel {
 
     // EFFECTS: draws semitone lines and bar lines
     private void drawLines(Graphics graphics) {
+        int endX = 0;
         Color save = graphics.getColor();
-        graphics.setColor(new Color(255, 255, 255));
-        for (int y = SEMITONE_HEIGHT; y < getHeight(); y += SEMITONE_HEIGHT) {
-            graphics.drawLine(0, y, getWidth(), y);
-        }
-        for (int x = BAR_WIDTH; x < getWidth(); x += BAR_WIDTH) {
+        graphics.setColor(new Color(100, 100, 200));
+        for (int measureNum = 0; measureNum < listOfMeasure.size(); measureNum++) {
+            int x = BAR_WIDTH * (measureNum + 1);
             graphics.drawLine(x, 0, x, getHeight());
+            endX = x;
+        }
+        for (int y = SEMITONE_HEIGHT; y < getHeight(); y += SEMITONE_HEIGHT) {
+            graphics.drawLine(0, y, endX, y);
+        }
+        if (playLineColumn > 0 && playLineColumn < getWidth()) {
+            graphics.setColor(Color.RED);
+            graphics.drawLine(playLineColumn, 0, playLineColumn, getHeight());
         }
         graphics.setColor(save);
     }
@@ -63,7 +121,7 @@ public class Composition extends JPanel {
     // EFFECTS: adds n new measures to composition after the posth measure with beatNum beats of type beatType.
     public void addMeasures(int n, int pos, int beatNum, int beatType) {
         for (int i = 0; i < n; i++) {
-            Measure tempMeasure = new Measure(beatNum, beatType);
+            Measure tempMeasure = new Measure(beatNum, beatType, this);
             listOfMeasure.add(pos, tempMeasure);
         }
     }

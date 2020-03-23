@@ -12,10 +12,23 @@ public class Measure {
     private List<Note> listOfNote;
     private int beatNumber;
     private int beatType;
+    private Composition composition;
 
 
     // REQUIRES: beatType is a power of 2
     // EFFECTS: instantiate an empty Measure with time signature beatNumber/beatType
+    public Measure(int beatNumber, int beatType, Composition composition) {
+        this.composition = composition;
+        listOfNote = new ArrayList<Note>();
+        if (beatNumber % 3 == 0 && beatNumber != 3) {
+            this.beatNumber = beatNumber / PULSES_PER_COMPOUND_BEAT;
+        } else {
+            this.beatNumber = beatNumber;
+        }
+        this.beatType = beatType;
+    }
+
+    // same but allows an unassigned measure
     public Measure(int beatNumber, int beatType) {
         listOfNote = new ArrayList<Note>();
         if (beatNumber % 3 == 0 && beatNumber != 3) {
@@ -24,6 +37,31 @@ public class Measure {
             this.beatNumber = beatNumber;
         }
         this.beatType = beatType;
+    }
+
+    // EFFECTS: returns the global start beat of this measure.
+    public int getGlobalStart() {
+        return composition.getGlobalStartOf(this);
+    }
+
+    // EFFECTS: returns the measure before this one in the comp.
+    public Measure getLast() {
+        return composition.getMeasure(composition.getListOfMeasure().indexOf(this));
+    }
+
+    // EFFECTS: returns the measure after this one in the comp.
+    public Measure getNext() {
+        return composition.getMeasure(composition.getListOfMeasure().indexOf(this) + 1);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: assigns this to given composition
+    public void assignToComposition(Composition composition) {
+        this.composition = composition;
+    }
+
+    public Composition getComposition() {
+        return composition;
     }
 
     // EFFECTS: draws all notes in this measure.

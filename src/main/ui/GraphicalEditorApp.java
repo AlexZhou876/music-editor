@@ -3,11 +3,12 @@ package ui;
 import model.Composition;
 import model.Note;
 import ui.sound.MidiSynth;
-import ui.tools.AddNoteTool;
-import ui.tools.Tool;
+import ui.tools.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -77,20 +78,34 @@ public class GraphicalEditorApp extends JFrame {
         JPanel toolbar = new JPanel();
         toolbar.setLayout(new GridLayout(0, 1));
         toolbar.setSize((new Dimension(0, 0)));
-        add(toolbar, BorderLayout.NORTH);
+        add(toolbar, BorderLayout.EAST);
 
         AddNoteTool addNoteTool = new AddNoteTool(this, toolbar);
         tools.add(addNoteTool);
+
+        AddMeasuresTool addMeasuresTool = new AddMeasuresTool(this, toolbar);
+
+        EditNoteTool editNoteTool = new EditNoteTool(this, toolbar);
+
+        RemoveMeasuresTool removeMeasuresTool = new RemoveMeasuresTool(this, toolbar);
+
+        PlayEntireTool playEntireTool = new PlayEntireTool(this, toolbar);
 
         setActiveTool(addNoteTool);
     }
 
     // MODIFIES: this
-    // EFFECTS: initializes EditorMouseListener for JFrame
+    // EFFECTS: initializes EditorMouseListener and EKL for JFrame
     private void initInteraction() {
         EditorMouseListener eml = new EditorMouseListener();
         addMouseListener(eml);
         addMouseMotionListener(eml);
+        /*
+        EditorKeyListener ekl = new EditorKeyListener();
+        addKeyListener(ekl);
+        composition.addKeyListener(ekl);
+
+         */
     }
 
     // MODIFIES: this
@@ -139,6 +154,14 @@ public class GraphicalEditorApp extends JFrame {
         repaint();
     }
 
+    // EFFECTS: if activeTool != null, then keytyped is invoked on activeTool.
+    private void handleKeyTyped(KeyEvent ke) {
+        if (activeTool != null) {
+            activeTool.keyTyped(ke);
+        }
+        repaint();
+    }
+
     // from SimpleDrawingPlayer (modified)
     private class EditorMouseListener extends MouseAdapter {
         // EFFECTS: Forward mouse pressed event to the active tool
@@ -164,6 +187,12 @@ public class GraphicalEditorApp extends JFrame {
         // EFFECTS: translates the mouse event to current drawing's coordinate system
         private MouseEvent translateEvent(MouseEvent e) {
             return SwingUtilities.convertMouseEvent(e.getComponent(), e, composition);
+        }
+    }
+
+    private class EditorKeyListener extends KeyAdapter {
+        public void keyTyped(KeyEvent ke) {
+            handleKeyTyped(ke);
         }
     }
 

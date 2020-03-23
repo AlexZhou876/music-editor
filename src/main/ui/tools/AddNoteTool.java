@@ -39,7 +39,7 @@ public class AddNoteTool extends Tool {
     public void mousePressed(MouseEvent e) {
         createNote(e);
         note.selectAndPlay();
-        note.setBounds(e.getPoint());
+        note.setBounds(e.getPoint().getX());
        // editor.getComposition().addMeasure(measure);
     }
 
@@ -47,7 +47,7 @@ public class AddNoteTool extends Tool {
     // EFFECTS: sets bounds of this note to where mouse is dragged to
     @Override
     public void mouseDragged(MouseEvent e) {
-        note.setBounds(e.getPoint());
+        note.setBounds(e.getPoint().getX());
     }
 
     // MODIFIES: this
@@ -77,6 +77,7 @@ public class AddNoteTool extends Tool {
         @Override
         public void actionPerformed(ActionEvent e) {
             editor.setActiveTool(AddNoteTool.this);
+            editor.repaint();
         }
     }
 }
