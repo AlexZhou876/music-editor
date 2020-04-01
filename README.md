@@ -82,4 +82,5 @@ Singleton to preserve this behaviour.
 - there was low cohesion in model.Composition because it had ui and graphics responsibilities as well
  as model responsibilities. It used to extend JPanel. This can be seen in previous commits. Fixed by separating ui
  responsibilities into a new class ui.CompositionPanel. 
-- 
+-  PlayEntireTool separated audio and playing responsibilities into EntirePlayer, PlayEntireTool deals only with ui 
+responsibilities. This improves cohesion.
