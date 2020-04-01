@@ -62,3 +62,24 @@ any given .mid file from anywhere).
 - ability to undo last action
 - have text annotations, including title and credits at the beginning
 - separate piece into different voices, like layers in an image editing app
+
+## Bugs
+- notes in a measure do not change position when their measure changes position due to removal of other measures (fixed)
+(note: solution not most efficient, because all measures are counted while they don't all need to be. But this is low concern)
+- notes touching the very end of the composition do not stop playing and are still selected (fixed)
+- edit mode is still active in play mode (fixed)
+- notes can be extended past end of composition (fixed)
+- inappropriate error messages appear after closing or cancelling dialogs (fixed)
+- note immediately following note of the same pitch fails to sound correctly
+- saving and loading doesn't work properly (use tests to solve)
+MidiSynth is the class that handles sound. Only a single instance is currently used so it makes sense to make it 
+Singleton to preserve this behaviour.
+
+## Phase 4: Task 2
+- I have chosen to implement a bidirectional association between model.Measure and model.Note. 
+
+## Phase 4: Task 3
+- there was low cohesion in model.Composition because it had ui and graphics responsibilities as well
+ as model responsibilities. It used to extend JPanel. This can be seen in previous commits. Fixed by separating ui
+ responsibilities into a new class ui.CompositionPanel. 
+- 

@@ -7,35 +7,35 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NoteTest {
     Note note;
+    Note note2;
     Composition composition;
+    Measure measure;
 
     @BeforeEach
     public void runBefore() {
-        composition = new Composition(2, 4, 4);
+        composition = new Composition(1, 4, 4);
         note = new Note(1, 1, 1);
         composition.getMeasure(1).addNote(note); //probably in note constructor???
+        measure = new Measure(4,4);
+        composition.addMeasure(measure);
+        note2 = new Note(measure, 2, 2, 2, null);
     }
 
     @Test
     public void test3ParamConstructor() {
         assertEquals(1, note.getValue());
-        assertEquals(1, note.getStart());
+        assertEquals(1, note.getGlobalStart());
         assertEquals(1, note.getPitch());
     }
 
-    /*
     @Test
-    public void test4ParamConstructor() {
-        // setup: remove the note object instantiated in runBefore?
-        note = new Note(composition.getMeasure(2),1,1,20);
-        // check
-        // problem w/ assertEquals(1, note.getValue()); is that note contains reference to a note instance without
-        // instantiated fields, a separate instance from the one that gets added to the measure.
-        assertEquals(1, note.getValue());
-        assertEquals(5, note.getStart());
-        assertEquals(1, note.getPitch());
+    public void test5ParamConstructor() {
+        assertEquals(2, note2.getValue());
+        assertEquals(2, note2.getGlobalStart());
+        assertEquals(2, note2.getPitch());
+        assertEquals(measure, note2.getMeasure());
     }
-*/
+
     @Test
     public void testResizeNote() {
         note.resizeNote(4);
@@ -46,16 +46,18 @@ public class NoteTest {
     @Test
     public void testMoveTime1Param() {
         note.moveTime(3);
-        assertEquals(3, note.getStart());
+        assertEquals(3, note.getGlobalStart());
         assertEquals(1, composition.getMeasure(1).getNote(3, 1).getValue());
     }
-
+/*
     @Test
     public void testMoveTime2Param() {
         note.moveTime(composition.getMeasure(2), 3);
         assertEquals(3, note.getStart());
         assertEquals(1, composition.getMeasure(2).getNote(3, 1).getValue());
     }
+
+ */
 
     @Test
     public void testMovePitch() {
@@ -68,6 +70,29 @@ public class NoteTest {
         Note note = composition.getMeasure(1).getNote(2, 2);
         assertNull(note);
     }
+
+    @Test
+    public void testAssignToMeasure() {
+        note.assignToMeasure(measure);
+        // test that note and measure have correct bidirectional association
+        assertEquals(measure, note.getMeasure());
+        assertEquals(note, measure.getNote(1,1));
+        // test that old measure no longer has note
+        assertNull(composition.getMeasure(1).getNote(1,1));
+    }
+
+    @Test
+    public void testUnassignFromMeasure() {
+        note.unassignFromMeasure();
+        assertNull(note.getMeasure());
+        assertEquals(0, composition.getMeasure(1).getListOfNote().size());
+    }
+
+
+
+
+
+
 
 
 }

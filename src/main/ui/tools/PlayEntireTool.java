@@ -27,8 +27,8 @@ public class PlayEntireTool extends Tool {
 
     // EFFECTS: plays the entire composition from the beginning.
     private void play() {
-        final Timer t = new Timer(2, null);
-        ActionListener a = new EntirePlayer(editor.getComposition(), t);
+        final Timer t = new Timer(10, null);
+        ActionListener a = new EntirePlayer(editor.getCompositionPanel(), t);
         t.addActionListener(a);
         t.setInitialDelay(0);
         t.start();
@@ -38,6 +38,8 @@ public class PlayEntireTool extends Tool {
     private class PlayEntireToolClickHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            editor.setActiveTool(PlayEntireTool.this);
+            editor.repaint();
             play();
         }
     }

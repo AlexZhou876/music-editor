@@ -81,8 +81,10 @@ public class Writer {
                 noteOn.setMessage(0x90, pitch, 0x60);
                 ShortMessage noteOff = new ShortMessage();
                 noteOff.setMessage(0x80, pitch, 0);
-                long startTime = (i  * beatNum + n.getStart()) * ticksPerBeat - ticksPerBeat;
-                long endTime = (i * beatNum + n.getStart() + n.getValue()) * ticksPerBeat - ticksPerBeat;
+                //long startTime = (i  * beatNum + n.getStart()) * ticksPerBeat - ticksPerBeat;
+                long startTime = n.getGlobalStart() * ticksPerBeat;
+                long endTime = (n.getGlobalStart() + n.getValue()) * ticksPerBeat;
+                //long endTime = (i * beatNum + n.getStart() + n.getValue()) * ticksPerBeat - ticksPerBeat;
                 // - ticksPerBeat to adjust since beat 1 in midi is tick 0, not tick ticksPerBeat
                 output.add(new MidiEvent(noteOn, startTime));
                 output.add(new MidiEvent(noteOff, endTime));

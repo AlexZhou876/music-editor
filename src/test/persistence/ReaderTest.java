@@ -22,7 +22,7 @@ public class ReaderTest {
 
     @BeforeEach
     public void RunBefore() throws InvalidMidiDataException, IOException {
-        file = new File("./data/midifile.mid");
+        file = new File("./data/saveFile.mid");
         sequence = MidiSystem.getSequence(file);
     }
 

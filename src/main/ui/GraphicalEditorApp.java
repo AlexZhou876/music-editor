@@ -1,7 +1,7 @@
 package ui;
 
 import model.Composition;
-import model.Note;
+import persistence.Reader;
 import ui.sound.MidiSynth;
 import ui.tools.*;
 
@@ -11,6 +11,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,12 +20,13 @@ import static model.Composition.SEMITONE_HEIGHT;
 public class GraphicalEditorApp extends JFrame {
     public static final int WIDTH = 1000;
     public static final int HEIGHT = SEMITONE_HEIGHT * 88;
+    public static final String SAVE_FILE = "./data/saveFile.mid";
 
     private MidiSynth midiSynth;
 
-    private Composition composition;
+    private CompositionPanel compositionPanel;
 
-    private List<Tool> tools;
+    private List<Tool> tools; // is this even useful??
     private Tool activeTool;
 
     public GraphicalEditorApp() {
@@ -32,6 +34,7 @@ public class GraphicalEditorApp extends JFrame {
         initFields();
         initGraphics();
         initSound();
+        showInitDialog();
         initInteraction();
     }
 
@@ -39,16 +42,50 @@ public class GraphicalEditorApp extends JFrame {
         return midiSynth;
     }
 
-    public Composition getComposition() {
-        return composition;
+    public CompositionPanel getCompositionPanel() {
+        return compositionPanel;
     }
 
     private void initFields() {
         activeTool = null;
-        composition = new Composition(1, 4, 4);
+        compositionPanel = new CompositionPanel(1, 4, 4);
         //composition.addMeasures(1, 1, 4, 4);
         tools = new ArrayList<Tool>();
     }
+
+    // EFFECTS: allows the user to input init options, such as to load from file or create new.
+    private void showInitDialog() {
+        int closedOption = -1;
+        int yes = 0;
+        int no = 1;
+        String[] options = {"Yes", "No"};
+        int n = JOptionPane.showOptionDialog(this,
+                "Would you like to load the previously saved file?",
+                "Initialization",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[1]);
+        if (n == closedOption) {
+            return;
+        } else if (n == yes) {
+            loadProject();
+        } else {
+            return;
+        }
+    }
+
+    // MODIFIES: this
+    // EFFECTS: changes composition to the one contained in the save file
+    private void loadProject() {
+        compositionPanel.setComposition(Reader.readFile(new File(SAVE_FILE)));
+        compositionPanel.getComposition().addMidiSynthToAll(midiSynth);
+        //compositionPanel = Reader.readFile(new File(SAVE_FILE));
+        //compositionPanel.addMidiSynthToAll(midiSynth);
+        repaint();
+    }
+
 
     private void initSound() {
         midiSynth = new MidiSynth();
@@ -68,7 +105,7 @@ public class GraphicalEditorApp extends JFrame {
     // MODIFIES: this
     // EFFECTS: adds a composition component to the editor
     private void addComposition() {
-        add(composition, BorderLayout.CENTER);
+        add(compositionPanel, BorderLayout.CENTER);
         validate();
     }
 
@@ -82,7 +119,7 @@ public class GraphicalEditorApp extends JFrame {
 
         AddNoteTool addNoteTool = new AddNoteTool(this, toolbar);
         tools.add(addNoteTool);
-
+// should I add the others to the list?? What is the point of the list?
         AddMeasuresTool addMeasuresTool = new AddMeasuresTool(this, toolbar);
 
         EditNoteTool editNoteTool = new EditNoteTool(this, toolbar);
@@ -90,6 +127,8 @@ public class GraphicalEditorApp extends JFrame {
         RemoveMeasuresTool removeMeasuresTool = new RemoveMeasuresTool(this, toolbar);
 
         PlayEntireTool playEntireTool = new PlayEntireTool(this, toolbar);
+
+        SaveTool saveTool = new SaveTool(this, toolbar);
 
         setActiveTool(addNoteTool);
     }
@@ -186,7 +225,7 @@ public class GraphicalEditorApp extends JFrame {
 
         // EFFECTS: translates the mouse event to current drawing's coordinate system
         private MouseEvent translateEvent(MouseEvent e) {
-            return SwingUtilities.convertMouseEvent(e.getComponent(), e, composition);
+            return SwingUtilities.convertMouseEvent(e.getComponent(), e, compositionPanel);
         }
     }
 

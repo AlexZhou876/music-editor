@@ -2,25 +2,25 @@ package ui.players;
 
 import model.Composition;
 import model.Note;
-import ui.EditorApp;
+import ui.CompositionPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class EntirePlayer implements ActionListener {
 
-    private Composition composition;
+    private CompositionPanel compositionPanel;
     private Timer timer;
     private int playingColumn;
     private List<Note> lastColumnPlayed;
     private List<Note> notesInColumn;
+    public static final int BUFFER = 5;
 
-    public EntirePlayer(Composition composition, Timer timer) {
-        this.composition = composition;
+    public EntirePlayer(CompositionPanel compositionPanel, Timer timer) {
+        this.compositionPanel = compositionPanel;
         this.timer = timer;
         playingColumn = 0;
         lastColumnPlayed = new ArrayList<Note>();
@@ -42,7 +42,7 @@ public class EntirePlayer implements ActionListener {
     // MODIFIES: this
     // EFFECTS: selects and plays notes at current column
     private void selectAndPlayNotes() {
-        notesInColumn = composition.getNotesAtColumn(playingColumn);
+        notesInColumn = compositionPanel.getComposition().getNotesAtColumn(playingColumn);
         for (Note note : lastColumnPlayed) {
             if (!notesInColumn.contains(note)) {
                 note.unselectAndStopPlaying();
@@ -58,8 +58,8 @@ public class EntirePlayer implements ActionListener {
     // MODIFIES: this
     // EFFECTS:  moves playback line to playingColumn to trigger sound and repaint
     private void drawRedLine() {
-        composition.setPlayLineColumn(playingColumn);
-        composition.repaint(); // the Java Graphics framework will call paintComponent
+        compositionPanel.setPlayLineColumn(playingColumn);
+        compositionPanel.repaint(); // the Java Graphics framework will call paintComponent
     }
 
     // MODIFIES: this
@@ -70,10 +70,11 @@ public class EntirePlayer implements ActionListener {
     }
 
     // MODIFIES: this
-    // EFFECTS:  calls Timer.stop() when playingColumn is past the edge of the frame
+    // EFFECTS:  calls Timer.stop() when playingColumn is past the edge of the composition.
     private void stopPlayingWhenDone() {
-        if (playingColumn > composition.getEnd()) {
+        if (playingColumn > compositionPanel.getComposition().getEnd() + BUFFER) {
             timer.stop();
+            compositionPanel.repaint();
         }
     }
 

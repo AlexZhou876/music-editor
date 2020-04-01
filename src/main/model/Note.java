@@ -3,6 +3,9 @@ package model;
 import ui.sound.MidiSynth;
 
 import java.awt.*;
+import java.util.Observable;
+import java.util.Observer;
+
 import static model.Composition.*;
 
 // class representing a music note, with starting time with respect to beats in the measure, note value
@@ -25,7 +28,7 @@ public class Note {
     // REQUIRES: start is a time value within the measure
     // EFFECTS: constructs a Note given a start time (beat), value, and pitch.
     public Note(int start, int value, int pitch) {
-        this.start = start;
+        this.globalStart = start;
         this.value = value;
         this.pitch = pitch;
     }
@@ -39,6 +42,10 @@ public class Note {
         this.midiSynth = midiSynth;
         this.measure = measure;
         measure.addNote(this);
+    }
+
+    public void setMidiSynth(MidiSynth midiSynth) {
+        this.midiSynth = midiSynth;
     }
 
     // EFFECTS: returns true if the note contains the given point, false otherwise.
@@ -127,12 +134,24 @@ public class Note {
         graphics.drawRect(x, y, width, height);
     }
 
-    // MODIFIES: this
-    // EFFECTS: assigns given measure to this note
+    // MODIFIES: this, measure
+    // EFFECTS: assigns given measure to this note and makes sure this is added to measure
     public void assignToMeasure(Measure measure) {
-        if (!this.measure.equals(measure)) {
+        if (this.measure == null) {
             this.measure = measure;
+            this.measure.addNote(this);
+        } else if (!this.measure.equals(measure)) {
+            unassignFromMeasure();
+            this.measure = measure;
+            this.measure.addNote(this);
         }
+    }
+
+    // MODIFIES: this, measure
+    // EFFECTS: unassigns this note from its measure and makes sure this is removed from measure
+    public void unassignFromMeasure() {
+        measure.removeNote(this);
+        measure = null;
     }
 
     // MODIFIES: this
@@ -173,8 +192,16 @@ public class Note {
     // REQUIRES: x coordinate of point > x coordinate of the note (remove)
     // MODIFIES: this
     // EFFECTS: sets the right edge of note to the indicated value
+    /*
     public void setBounds(double x) {
         value = ((int) (x - globalStart * BEAT_WIDTH)) / BEAT_WIDTH + 1;
+    }
+
+     */
+
+    public void setBounds(double draggedToX) {
+        int globalEnd =  2 + (((int) draggedToX) / BEAT_WIDTH);
+        value = globalEnd - globalStart;
     }
 
     // REQUIRES: a valid value for target (>0 and fits within time range of composition)
@@ -198,14 +225,13 @@ public class Note {
     }
     */
 
-    // REQUIRES: target is within the same measure
     // MODIFIES: this
-    // EFFECTS: moves the start time of the note to beat #target of the same measure
-    // !!! somehow handles overflow
+    // EFFECTS: moves the start time of the note to beat #target
     public void moveTime(int target) {
-        start = target;
+        globalStart = target;
     }
 
+    /*
     // REQUIRES: measure exists within the composition and target beat is within that measure
     // MODIFIES: this
     // EFFECTS: moves the start time of the note to beat #target of the given measure
@@ -213,6 +239,8 @@ public class Note {
         measure.addNote(this);
         this.moveTime(target);
     }
+
+     */
 
     // REQUIRES: a valid value for target (within pitch range of composition [1, 88])
     // MODIFIES: this
@@ -250,6 +278,7 @@ public class Note {
     public Measure getMeasure() {
         return measure;
     }
+
 
 
 }

@@ -18,13 +18,13 @@ public class EditNoteTool extends Tool {
 
     public EditNoteTool(GraphicalEditorApp editor, JComponent parent) {
         super(editor, parent);
-        editor.getComposition().getInputMap()
+        editor.getCompositionPanel().getInputMap()
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,0), "incrementValue");
-        editor.getComposition().getActionMap().put("incrementValue", new IncrementValue());
-        editor.getComposition().getInputMap().put(KeyStroke.getKeyStroke("VK_LEFT"), "decrementValue");
-        editor.getComposition().getActionMap().put("decrementValue", new DecrementValue());
-        editor.getComposition().getInputMap().put(KeyStroke.getKeyStroke("VK_DELETE"), "delete");
-        editor.getComposition().getActionMap().put("delete", new Delete());
+        editor.getCompositionPanel().getActionMap().put("incrementValue", new IncrementValue());
+        editor.getCompositionPanel().getInputMap().put(KeyStroke.getKeyStroke("VK_LEFT"), "decrementValue");
+        editor.getCompositionPanel().getActionMap().put("decrementValue", new DecrementValue());
+        editor.getCompositionPanel().getInputMap().put(KeyStroke.getKeyStroke("VK_DELETE"), "delete");
+        editor.getCompositionPanel().getActionMap().put("delete", new Delete());
     }
 
     @Override
@@ -43,7 +43,7 @@ public class EditNoteTool extends Tool {
     // Otherwise do nothing.
     @Override
     public void mousePressed(MouseEvent e) {
-        Note newNote = editor.getComposition().getNoteAtPoint(e.getPoint());
+        Note newNote = editor.getCompositionPanel().getComposition().getNoteAtPoint(e.getPoint());
         /*
         note = editor.getComposition().getNoteAtPoint(e.getPoint());
         if (note != null) {

@@ -1,3 +1,4 @@
+/*
 package ui;
 
 import model.Composition;
@@ -141,7 +142,7 @@ public class EditorApp {
         for (String s: tempArray) {
             inputList.add(Integer.parseInt(s));
         }
-     */
+
 
     // EFFECTS: allows the user to remove measures.
     private void removeMeasures() {
@@ -232,3 +233,4 @@ public class EditorApp {
         System.out.println(piece.getContents());
     }
 }
+*/

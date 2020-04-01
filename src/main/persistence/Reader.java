@@ -3,6 +3,7 @@ package persistence;
 import model.Composition;
 import model.Measure;
 import model.Note;
+import ui.GraphicalEditorApp;
 
 import javax.sound.midi.*;
 import java.io.File;
@@ -23,6 +24,8 @@ public class Reader {
     private static int ticksPerBeat;
     private static int beatNum;
     private static int beatType;
+
+
 
     public static Composition readFile(File file) {
         Sequence sequence = null;
@@ -45,9 +48,11 @@ public class Reader {
         getTimeSignature(midiEvents);
         List<Note> notes = midiEventsToNotes(midiEvents);
         List<Measure> output = allocateNotes(notes);
-        convertNoteStarts(output);
+        //convertNoteStarts(output);
         return output;
     }
+
+
 
     // REQUIRES: non-empty track array
     // EFFECTS: returns a list of all midi events in all tracks.
@@ -81,8 +86,9 @@ public class Reader {
                     if ((pairType == NOTE_OFF || velocity2 == 0) && pitch == pitch2) {
                         int value = (int) Math.round(((double) ne.getTick() / (double) ticksPerBeat)) - startBeat;
                         int pianoKey = pitch - MIDI_A0_VALUE;
-                        output.add(new Note(startBeat + 1, value, pianoKey)); //+1: see Writer.getNoteEvents
+                        output.add(new Note(startBeat, value, pianoKey)); //+1: see Writer.getNoteEvents
                         break;
+                        // ok to use obsolete constructor here because midisynth and measure can be added later
                     }
                 }
             }
@@ -103,8 +109,8 @@ public class Reader {
     private static List<Measure> allocateNotes(List<Note> notes) {
         List<Measure> output = new ArrayList<>();
         for (Note n: notes) {
-            int quotient = n.getStart() / beatNum;
-            int remainder = n.getStart() % beatNum;
+            int quotient = n.getGlobalStart() / beatNum;
+            int remainder = n.getGlobalStart() % beatNum;
             if (quotient > output.size() && remainder == 0) { // case for no measure, note on last beat
                 int outputInitSize = output.size();
                 for (int i = 0; i < quotient - outputInitSize; i++) { // used to be <=

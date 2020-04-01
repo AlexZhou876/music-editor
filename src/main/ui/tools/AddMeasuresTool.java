@@ -30,8 +30,8 @@ public class AddMeasuresTool extends Tool {
     // MODIFIES: editor
     // EFFECTS: adds the specified number of measures to the composition
     private void addMeasures(int numMeasures) {
-        int size = editor.getComposition().getNumMeasures();
-        editor.getComposition().addMeasures(numMeasures, size, 4, 4);
+        int size = editor.getCompositionPanel().getComposition().getNumMeasures();
+        editor.getCompositionPanel().getComposition().addMeasures(numMeasures, size, 4, 4);
     }
 
     private class AddMeasuresToolClickHandler implements ActionListener {
@@ -43,6 +43,9 @@ public class AddMeasuresTool extends Tool {
             editor.setActiveTool(AddMeasuresTool.this);
             String input = JOptionPane.showInputDialog(editor,
                     "How many measures to add?", "1");
+            if (input == null) {
+                return;
+            }
             try {
                 int numMeasures = Integer.parseInt(input);
                 addMeasures(numMeasures);

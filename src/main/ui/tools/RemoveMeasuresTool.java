@@ -1,6 +1,5 @@
 package ui.tools;
 
-import com.sun.corba.se.impl.orbutil.graph.Graph;
 import ui.GraphicalEditorApp;
 
 import javax.swing.*;
@@ -29,7 +28,7 @@ public class RemoveMeasuresTool extends Tool {
     // MODIFIES: editor
     // EFFECTS: removes the specified measure from the composition.
     private void removeMeasures(List<Integer> listOfPos) {
-        editor.getComposition().removeMeasures(listOfPos);
+        editor.getCompositionPanel().getComposition().removeMeasures(listOfPos);
     }
 
     private class RemoveMeasuresToolClickHandler implements ActionListener {
@@ -42,6 +41,9 @@ public class RemoveMeasuresTool extends Tool {
             List<Integer> listOfPos = new ArrayList<>();
             String input = JOptionPane.showInputDialog(editor,
                     "Enter, with spaces, the measure #s of the measures to remove.", null);
+            if (input == null) {
+                return;
+            }
             String[] tempArray = input.split(" ");
             try {
                 for (int i = 0; i < tempArray.length; i++) {

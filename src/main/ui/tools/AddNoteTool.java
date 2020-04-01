@@ -1,7 +1,7 @@
 package ui.tools;
 
 import model.*;
-import static model.Composition.*;
+import static ui.CompositionPanel.*;
 import ui.GraphicalEditorApp;
 
 import javax.swing.*;
@@ -47,7 +47,9 @@ public class AddNoteTool extends Tool {
     // EFFECTS: sets bounds of this note to where mouse is dragged to
     @Override
     public void mouseDragged(MouseEvent e) {
-        note.setBounds(e.getPoint().getX());
+        if (e.getPoint().getX() < editor.getCompositionPanel().getComposition().getEnd()) {
+            note.setBounds(e.getPoint().getX());
+        }
     }
 
     // MODIFIES: this
@@ -64,7 +66,7 @@ public class AddNoteTool extends Tool {
         int pitch =  88 - ((int) e.getPoint().getY()) / SEMITONE_HEIGHT;
         int measureNum = 1 + ((int) e.getPoint().getX()) / BAR_WIDTH;
         int globalStart = 1 + ((int) e.getPoint().getX()) / BEAT_WIDTH;
-        measure = editor.getComposition().getMeasure(measureNum);
+        measure = editor.getCompositionPanel().getComposition().getMeasure(measureNum);
         note = new Note(measure, globalStart, 0, pitch, editor.getMidiSynth());
         // maybe value should be 1
     }
