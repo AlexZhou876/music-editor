@@ -139,12 +139,12 @@ public class GraphicalEditorApp extends JFrame {
         EditorMouseListener eml = new EditorMouseListener();
         addMouseListener(eml);
         addMouseMotionListener(eml);
-        /*
+
         EditorKeyListener ekl = new EditorKeyListener();
         addKeyListener(ekl);
-        composition.addKeyListener(ekl);
+        compositionPanel.addKeyListener(ekl);
 
-         */
+
     }
 
     // MODIFIES: this

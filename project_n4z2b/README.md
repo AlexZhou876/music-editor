@@ -53,8 +53,21 @@ any given .mid file from anywhere).
 - no others except preserving the functionality of earlier user stories
 
 
+## Phase 4: Task 2
+- I have chosen to implement a bidirectional association between model.Measure and model.Note. 
 
-## Wish List
+## Phase 4: Task 3
+- there was low cohesion in model.Composition because it had ui and graphics responsibilities as well
+ as model responsibilities. It used to extend JPanel. This can be seen in previous commits. Fixed by separating ui
+ responsibilities into a new class ui.CompositionPanel. 
+-  PlayEntireTool separated audio and playing responsibilities into EntirePlayer, PlayEntireTool deals only with ui 
+responsibilities. This improves cohesion.
+
+## Continuation
+
+## Wish List/Todo
+- refactor player to not need association to model
+- separate out graphics responsibilities from model entirely using some sort of renderer class
 - selection of notes or a group of notes (using box select). Must be able to move the selected notes
 - copy and pasting of selected notes.
 - ability to pan and zoom in the 2d environment where the piece is displayed.
@@ -71,16 +84,7 @@ any given .mid file from anywhere).
 - notes can be extended past end of composition (fixed)
 - inappropriate error messages appear after closing or cancelling dialogs (fixed)
 - note immediately following note of the same pitch fails to sound correctly
-- saving and loading doesn't work properly (use tests to solve)
+- saving and loading doesn't work properly (fixed)
 MidiSynth is the class that handles sound. Only a single instance is currently used so it makes sense to make it 
 Singleton to preserve this behaviour.
 
-## Phase 4: Task 2
-- I have chosen to implement a bidirectional association between model.Measure and model.Note. 
-
-## Phase 4: Task 3
-- there was low cohesion in model.Composition because it had ui and graphics responsibilities as well
- as model responsibilities. It used to extend JPanel. This can be seen in previous commits. Fixed by separating ui
- responsibilities into a new class ui.CompositionPanel. 
--  PlayEntireTool separated audio and playing responsibilities into EntirePlayer, PlayEntireTool deals only with ui 
-responsibilities. This improves cohesion.

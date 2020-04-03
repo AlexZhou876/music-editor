@@ -74,21 +74,23 @@ public class Reader {
         List<Note> output = new ArrayList<>();
         List<MidiEvent> noteEvents = filterEvents(midiEvents);
         for (int i = 0; i < noteEvents.size(); i++) {
-            int eventType = noteEvents.get(i).getMessage().getStatus() >> REST_OF_STATUS_BYTE;
-            int velocity = noteEvents.get(i).getMessage().getMessage()[2];
+            MidiEvent potentialOn = noteEvents.get(i);
+            int eventType = potentialOn.getMessage().getStatus() >> REST_OF_STATUS_BYTE;
+            int velocity = potentialOn.getMessage().getMessage()[2];
             if (eventType == NOTE_ON && velocity != 0) { // velocity check here not technically necessary
-                byte pitch = noteEvents.get(i).getMessage().getMessage()[1];
-                int startBeat = (int) (noteEvents.get(i).getTick() / ticksPerBeat);
-                for (MidiEvent ne: noteEvents) {
-                    int pairType =  ne.getMessage().getStatus() >> REST_OF_STATUS_BYTE;
-                    int velocity2 = ne.getMessage().getMessage()[2];
-                    byte pitch2 = ne.getMessage().getMessage()[1];
-                    if ((pairType == NOTE_OFF || velocity2 == 0) && pitch == pitch2) {
-                        int value = (int) Math.round(((double) ne.getTick() / (double) ticksPerBeat)) - startBeat;
+                byte pitch = potentialOn.getMessage().getMessage()[1];
+                int startBeat = 1 + (int) (potentialOn.getTick() / ticksPerBeat);
+                for (MidiEvent potentialOff: noteEvents) {
+                    int pairType =  potentialOff.getMessage().getStatus() >> REST_OF_STATUS_BYTE;
+                    int velocity2 = potentialOff.getMessage().getMessage()[2];
+                    byte pitch2 = potentialOff.getMessage().getMessage()[1];
+                    int endBeat = 1 + (int) Math.round((double) potentialOff.getTick() / (double) ticksPerBeat);
+                    if ((pairType == NOTE_OFF || velocity2 == 0) && pitch == pitch2 && endBeat > startBeat) {
+                        int value = endBeat - startBeat;
                         int pianoKey = pitch - MIDI_A0_VALUE;
                         output.add(new Note(startBeat, value, pianoKey)); //+1: see Writer.getNoteEvents
-                        break;
                         // ok to use obsolete constructor here because midisynth and measure can be added later
+                        break;
                     }
                 }
             }
