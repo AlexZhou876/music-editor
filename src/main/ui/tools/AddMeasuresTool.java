@@ -3,6 +3,7 @@ package ui.tools;
 import ui.GraphicalEditorApp;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -53,8 +54,9 @@ public class AddMeasuresTool extends Tool {
                 JOptionPane.showMessageDialog(editor, "Please enter a positive integer.");
                 ex.printStackTrace();
             }
+            resizeCompositionPanel();
             editor.repaint();
-// parent should be editor or toolbar???
+// code duplication: extract to superclass
         }
     }
 }

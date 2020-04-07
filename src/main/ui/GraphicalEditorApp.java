@@ -2,29 +2,32 @@ package ui;
 
 import model.Composition;
 import persistence.Reader;
+import ui.players.EntirePlayer;
 import ui.sound.MidiSynth;
 import ui.tools.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import static model.Composition.SEMITONE_HEIGHT;
 
 public class GraphicalEditorApp extends JFrame {
-    public static final int WIDTH = 1000;
+    public static final int WIDTH = 1500;
     public static final int HEIGHT = SEMITONE_HEIGHT * 88;
+    //public static final int HEIGHT = SEMITONE_HEIGHT * 70;
     public static final String SAVE_FILE = "./data/saveFile.mid";
 
     private MidiSynth midiSynth;
+    private EntirePlayer player;
 
     private CompositionPanel compositionPanel;
+    private JScrollPane scroller;
 
     private List<Tool> tools; // is this even useful??
     private Tool activeTool;
@@ -48,7 +51,7 @@ public class GraphicalEditorApp extends JFrame {
 
     private void initFields() {
         activeTool = null;
-        compositionPanel = new CompositionPanel(1, 4, 4);
+        compositionPanel = new CompositionPanel(1, 4, 4, this);
         //composition.addMeasures(1, 1, 4, 4);
         tools = new ArrayList<Tool>();
     }
@@ -96,17 +99,37 @@ public class GraphicalEditorApp extends JFrame {
         setLayout(new BorderLayout());
         setMinimumSize(new Dimension(WIDTH, HEIGHT));
         createTools();
+        createNavigationBar();
         addComposition();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+        // necessary if size of composition may change???
+        setBackground(Color.black);
+    }
+
+    private void createNavigationBar() {
+        //JToolBar navigationBar = new JToolBar("Navigation");
+        JButton button = new JButton("Jump to");
+        JTextField measureNumber = new JTextField();
+        NavigationBar bar = new NavigationBar("Navigation", button, measureNumber, this);
+        add(bar, BorderLayout.PAGE_START);
+
+
     }
 
     // MODIFIES: this
     // EFFECTS: adds a composition component to the editor
     private void addComposition() {
-        add(compositionPanel, BorderLayout.CENTER);
+        //add(compositionPanel, BorderLayout.CENTER);
+        compositionPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        scroller = new JScrollPane(compositionPanel);
+        add(scroller, BorderLayout.CENTER);
         validate();
+    }
+
+    public JScrollPane getScroller() {
+        return scroller;
     }
 
     // MODIFIES: this
@@ -126,25 +149,34 @@ public class GraphicalEditorApp extends JFrame {
 
         RemoveMeasuresTool removeMeasuresTool = new RemoveMeasuresTool(this, toolbar);
 
-        PlayEntireTool playEntireTool = new PlayEntireTool(this, toolbar);
+
+        player = new EntirePlayer(compositionPanel, new Timer(0,null), null);
+        PlayEntireTool playEntireTool = new PlayEntireTool(this, toolbar, player);
+        player.setTool(playEntireTool);
 
         SaveTool saveTool = new SaveTool(this, toolbar);
 
         setActiveTool(addNoteTool);
     }
 
+    public EntirePlayer getPlayer() {
+        return player;
+    }
+
     // MODIFIES: this
     // EFFECTS: initializes EditorMouseListener and EKL for JFrame
     private void initInteraction() {
         EditorMouseListener eml = new EditorMouseListener();
-        addMouseListener(eml);
-        addMouseMotionListener(eml);
-        /*
-        EditorKeyListener ekl = new EditorKeyListener();
-        addKeyListener(ekl);
-        composition.addKeyListener(ekl);
+        compositionPanel.addMouseListener(eml);
+        compositionPanel.addMouseMotionListener(eml);
 
-         */
+        //EditorKeyListener ekl = new EditorKeyListener();
+        //addKeyListener(ekl);
+        //compositionPanel.addKeyListener(ekl);
+        //compositionPanel.setFocusable(true);
+        //compositionPanel.requestFocusInWindow();
+
+
     }
 
     // MODIFIES: this
@@ -201,6 +233,8 @@ public class GraphicalEditorApp extends JFrame {
         repaint();
     }
 
+
+
     // from SimpleDrawingPlayer (modified)
     private class EditorMouseListener extends MouseAdapter {
         // EFFECTS: Forward mouse pressed event to the active tool
@@ -229,11 +263,6 @@ public class GraphicalEditorApp extends JFrame {
         }
     }
 
-    private class EditorKeyListener extends KeyAdapter {
-        public void keyTyped(KeyEvent ke) {
-            handleKeyTyped(ke);
-        }
-    }
 
 
 }

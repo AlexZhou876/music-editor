@@ -11,6 +11,7 @@ import javax.sound.midi.Sequence;
 import java.io.File;
 import java.io.IOException;
 
+// better way to test reader on its own would be to write a small midi file in the RunBefore.
 public class ReaderTest {
     File file;
     Sequence sequence;

@@ -1,5 +1,6 @@
 package ui.tools;
 
+import exceptions.InvalidTargetValue;
 import model.*;
 import static ui.CompositionPanel.*;
 import ui.GraphicalEditorApp;
@@ -21,6 +22,7 @@ public class AddNoteTool extends Tool {
     protected void createButton(JComponent parent) {
         button = new JButton(getLabel());
         button = customizeButton(button);
+
     }
 
     @Override
@@ -39,8 +41,17 @@ public class AddNoteTool extends Tool {
     public void mousePressed(MouseEvent e) {
         createNote(e);
         note.selectAndPlay();
-        note.setBounds(e.getPoint().getX());
-       // editor.getComposition().addMeasure(measure);
+        /*
+        try {
+            note.setBounds(e.getPoint().getX());
+        } catch (InvalidTargetValue invalidTargetValue) {
+            invalidTargetValue.printStackTrace();
+        }
+        // editor.getComposition().addMeasure(measure);
+
+         */
+
+
     }
 
     // MODIFIES: this
@@ -48,7 +59,11 @@ public class AddNoteTool extends Tool {
     @Override
     public void mouseDragged(MouseEvent e) {
         if (e.getPoint().getX() < editor.getCompositionPanel().getComposition().getEnd()) {
-            note.setBounds(e.getPoint().getX());
+            try {
+                note.setBounds(e.getPoint().getX());
+            } catch (InvalidTargetValue invalidTargetValue) {
+                invalidTargetValue.printStackTrace();
+            }
         }
     }
 
@@ -67,7 +82,7 @@ public class AddNoteTool extends Tool {
         int measureNum = 1 + ((int) e.getPoint().getX()) / BAR_WIDTH;
         int globalStart = 1 + ((int) e.getPoint().getX()) / BEAT_WIDTH;
         measure = editor.getCompositionPanel().getComposition().getMeasure(measureNum);
-        note = new Note(measure, globalStart, 0, pitch, editor.getMidiSynth());
+        note = new Note(measure, globalStart, 1, pitch, editor.getMidiSynth());
         // maybe value should be 1
     }
 

@@ -3,6 +3,7 @@ package ui.tools;
 import ui.GraphicalEditorApp;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class RemoveMeasuresTool extends Tool {
                 JOptionPane.showMessageDialog(editor, "Please enter existing measure numbers only.");
                 ex.printStackTrace();
             }
+            resizeCompositionPanel();
             editor.repaint();
         }
     }

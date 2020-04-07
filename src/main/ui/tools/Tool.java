@@ -4,6 +4,7 @@ import model.Composition;
 import ui.GraphicalEditorApp;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
@@ -37,6 +38,17 @@ public abstract class Tool {
         button.setFocusPainted(true);
         button.setContentAreaFilled(true);
         return button;
+    }
+
+    // MODIFIES: editor
+    // EFFECTS: changes the size of the compositionPanel. If the new width is greater than the starting width, assign
+    // the new width. Otherwise do nothing.
+    protected void resizeCompositionPanel() {
+        int end = editor.getCompositionPanel().getComposition().getEnd();
+        if (end > editor.WIDTH) {
+            editor.getCompositionPanel().setPreferredSize(new Dimension(end, editor.HEIGHT));
+            editor.getCompositionPanel().revalidate();
+        }
     }
 
     // getters

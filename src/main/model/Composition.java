@@ -1,5 +1,6 @@
 package model;
 
+import ui.CompositionPanel;
 import ui.sound.MidiSynth;
 
 import javax.swing.*;
@@ -19,9 +20,8 @@ public class Composition  { // used to extend JPanel
     private int barWidth; // implement later
 
     //private int playLineColumn; graphics responsibilities
-    public static final int BAR_WIDTH = 200;
-    public static final int BEAT_WIDTH = 50;
-    public static final int SEMITONE_HEIGHT = 10;
+    public static int BEAT_WIDTH = CompositionPanel.BEAT_WIDTH;
+    public static int SEMITONE_HEIGHT = CompositionPanel.SEMITONE_HEIGHT;
 
     // REQUIRES: beatType is a power of 2
     // EFFECTS: instantiates a new composition with numMeasures measures, beatNum beats of type beatType per measure.

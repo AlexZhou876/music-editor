@@ -1,5 +1,6 @@
 package model;
 
+import exceptions.InvalidTargetValue;
 import ui.sound.MidiSynth;
 
 import java.awt.*;
@@ -12,7 +13,7 @@ import static model.Composition.*;
 // with respect to beats in the measure, and pitch [1,88]
 public class Note {
     public static final int PLACEHOLDER_VOLUME = 100;
-    public static final int PLACEHOLDER_INSTRUMENT = 1;
+    public static final int PLACEHOLDER_INSTRUMENT = 1; // midi program change values
     public static final int MIDI_A0_VALUE = 21;
     public static final Color PLAYING = new Color(230, 158, 60);
     private Measure measure; //bidirectional association
@@ -76,9 +77,10 @@ public class Note {
 
          */
         int newGlobalStart = 1 + ((int) draggedTo.getX()) / BEAT_WIDTH;
+        int newGlobalEnd = newGlobalStart + value;
         int newPitch = 88 - ((int) draggedTo.getY()) / SEMITONE_HEIGHT;
         noteChanges = newGlobalStart != globalStart || newPitch != pitch;
-        if (noteChanges && inBounds(newGlobalStart, newPitch)) {
+        if (noteChanges && inBounds(newGlobalEnd, newPitch)) {
             changeAssignedMeasure(newGlobalStart);
             stopPlaying();
             globalStart = newGlobalStart;
@@ -101,9 +103,9 @@ public class Note {
 
 
     // EFFECTS: returns true if the starting time and pitch given are in the composition.
-    private boolean inBounds(int start, int pitch) {
+    private boolean inBounds(int end, int pitch) {
         int totalBeats = measure.getComposition().getNumBeats();
-        return start <= totalBeats && start >= 1 && pitch <= 88 && pitch >= 1;
+        return end - 1 <= totalBeats && end >= 1 && pitch <= 88 && pitch >= 1;
     }
 
     // EFFECTS: converts model pitch values to y screen coordinate
@@ -199,15 +201,26 @@ public class Note {
 
      */
 
-    public void setBounds(double draggedToX) {
-        int globalEnd =  2 + (((int) draggedToX) / BEAT_WIDTH);
+    // MODIFIES: this
+    // EFFECTS: changes the value of this note depending on coordinate dragged to. If dragged left of start or right of
+    // composition end, throw InvalidTargetValue.
+    public void setBounds(double draggedToX) throws InvalidTargetValue {
+        int globalEnd = 2 + ((int) (draggedToX / BEAT_WIDTH));
+        // why +2: imagine if draggedToX/BEAT_WIDTH = 0. Then the note starts on 1 and ends on 2.
+        if (globalEnd - 1 < globalStart || globalEnd - 1 > measure.getComposition().getNumBeats()) {
+            throw new InvalidTargetValue();
+        }
         value = globalEnd - globalStart;
     }
 
-    // REQUIRES: a valid value for target (>0 and fits within time range of composition)
+
     // MODIFIES: this
-    // EFFECTS: value is set to target.
-    public void resizeNote(int target) {
+    // EFFECTS: value is set to target. If target is invalid, throws InvalidTargetValue.
+    public void resizeNote(int target) throws InvalidTargetValue {
+        int globalEnd = globalStart + target;
+        if (globalEnd - 1 > measure.getComposition().getNumBeats() || globalEnd <= globalStart) {
+            throw new InvalidTargetValue();
+        }
         value = target;
     }
     /*

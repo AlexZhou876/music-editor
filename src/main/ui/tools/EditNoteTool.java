@@ -1,5 +1,6 @@
 package ui.tools;
 
+import exceptions.InvalidTargetValue;
 import model.Note;
 import static model.Composition.*;
 import ui.GraphicalEditorApp;
@@ -18,16 +19,22 @@ public class EditNoteTool extends Tool {
 
     public EditNoteTool(GraphicalEditorApp editor, JComponent parent) {
         super(editor, parent);
-        editor.getCompositionPanel().getInputMap()
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT,0), "incrementValue");
+
+        editor.getCompositionPanel().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, true), "incrementValue");
         editor.getCompositionPanel().getActionMap().put("incrementValue", new IncrementValue());
-        editor.getCompositionPanel().getInputMap().put(KeyStroke.getKeyStroke("VK_LEFT"), "decrementValue");
+        editor.getCompositionPanel().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, true), "decrementValue");
         editor.getCompositionPanel().getActionMap().put("decrementValue", new DecrementValue());
-        editor.getCompositionPanel().getInputMap().put(KeyStroke.getKeyStroke("VK_DELETE"), "delete");
+        editor.getCompositionPanel().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true), "delete");
         editor.getCompositionPanel().getActionMap().put("delete", new Delete());
+
+
     }
 
     @Override
+    // Note: focusable set to false so that keylisteners remain attached to compositionPanel
     protected void createButton(JComponent parent) {
         button = new JButton("Edit Note");
         button = customizeButton(button);
@@ -95,10 +102,11 @@ public class EditNoteTool extends Tool {
         }
         super.deactivate();
     }
-/*
+
     // MODIFIES: note (this)
     // EFFECTS: Right arrow presses increment the value of the note, and left arrow presses decrement.
     // Delete key deletes the note.
+    /*
     @Override
     public void keyTyped(KeyEvent ke) {
         int currentWidth = note.getGlobalStart() + note.getValue();
@@ -111,7 +119,9 @@ public class EditNoteTool extends Tool {
             note.unselectAndStopPlaying();
         }
     }
-*/
+
+     */
+
 
     // for the tool button
     private class EditNoteToolClickHandler implements ActionListener {
@@ -120,6 +130,7 @@ public class EditNoteTool extends Tool {
         @Override
         public void actionPerformed(ActionEvent e) {
             editor.setActiveTool(EditNoteTool.this);
+            //editor.getCompositionPanel().requestFocus();
         }
     }
 
@@ -128,8 +139,11 @@ public class EditNoteTool extends Tool {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (EditNoteTool.this.isActive()) {
-                int currentWidth = note.getGlobalStart() + note.getValue();
-                note.setBounds(currentWidth + BEAT_WIDTH);
+                try {
+                    note.resizeNote(note.getValue() + 1);
+                } catch (InvalidTargetValue invalidTargetValue) {
+                    invalidTargetValue.printStackTrace();
+                }
                 editor.repaint();
             }
         }
@@ -140,11 +154,12 @@ public class EditNoteTool extends Tool {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (EditNoteTool.this.isActive()) {
-                int currentWidth = note.getGlobalStart() + note.getValue();
-                if (currentWidth > 1) {
-                    note.setBounds(currentWidth - BEAT_WIDTH);
-                    editor.repaint();
+                try {
+                    note.resizeNote(note.getValue() - 1);
+                } catch (InvalidTargetValue invalidTargetValue) {
+                    invalidTargetValue.printStackTrace();
                 }
+                editor.repaint();
             }
         }
     }

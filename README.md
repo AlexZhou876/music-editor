@@ -53,28 +53,6 @@ any given .mid file from anywhere).
 - no others except preserving the functionality of earlier user stories
 
 
-
-## Wish List
-- selection of notes or a group of notes (using box select). Must be able to move the selected notes
-- copy and pasting of selected notes.
-- ability to pan and zoom in the 2d environment where the piece is displayed.
-- ability to play the composition from a starting point.
-- ability to undo last action
-- have text annotations, including title and credits at the beginning
-- separate piece into different voices, like layers in an image editing app
-
-## Bugs
-- notes in a measure do not change position when their measure changes position due to removal of other measures (fixed)
-(note: solution not most efficient, because all measures are counted while they don't all need to be. But this is low concern)
-- notes touching the very end of the composition do not stop playing and are still selected (fixed)
-- edit mode is still active in play mode (fixed)
-- notes can be extended past end of composition (fixed)
-- inappropriate error messages appear after closing or cancelling dialogs (fixed)
-- note immediately following note of the same pitch fails to sound correctly
-- saving and loading doesn't work properly (use tests to solve)
-MidiSynth is the class that handles sound. Only a single instance is currently used so it makes sense to make it 
-Singleton to preserve this behaviour.
-
 ## Phase 4: Task 2
 - I have chosen to implement a bidirectional association between model.Measure and model.Note. 
 
@@ -84,3 +62,33 @@ Singleton to preserve this behaviour.
  responsibilities into a new class ui.CompositionPanel. 
 -  PlayEntireTool separated audio and playing responsibilities into EntirePlayer, PlayEntireTool deals only with ui 
 responsibilities. This improves cohesion.
+
+## Continuation
+
+## Wish List/Todo
+- disable other tools while playing is active
+- refactor player to not need association to model
+- separate out graphics responsibilities from model entirely using some sort of renderer class
+- selection of notes or a group of notes (using box select). Must be able to move the selected notes
+- copy and pasting of selected notes.
+- ability to pan and zoom in the 2d environment where the piece is displayed. (pan: done. Zoom: incomplete)
+- ability to play the composition from a starting point (implemented)
+- ability to undo last action
+- have text annotations, including title and credits at the beginning
+- separate piece into different voices, like layers in an image editing app
+- different instruments
+
+## Bugs
+- notes in a measure do not change position when their measure changes position due to removal of other measures (fixed)
+(note: solution not most efficient, because all measures are counted while they don't all need to be. But this is low concern)
+- notes touching the very end of the composition do not stop playing and are still selected (fixed)
+- edit mode is still active in play mode (fixed)
+- notes can be extended past end of composition (fixed)
+- inappropriate error messages appear after closing or cancelling dialogs (fixed)
+- note immediately following note of the same pitch fails to sound correctly
+- saving and loading doesn't work properly (fixed)
+- when adding note, able to drag it to negative value (fixed)
+MidiSynth is the class that handles sound. Only a single instance is currently used so it makes sense to make it 
+Singleton to preserve this behaviour.
+- FIX ALL MODULAR ARITHMETIC PROBLEMS!!!
+

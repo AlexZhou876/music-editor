@@ -1,5 +1,6 @@
 package model;
 
+import exceptions.InvalidTargetValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +39,11 @@ public class NoteTest {
 
     @Test
     public void testResizeNote() {
-        note.resizeNote(4);
+        try {
+            note.resizeNote(4);
+        } catch (InvalidTargetValue invalidTargetValue) {
+            invalidTargetValue.printStackTrace();
+        }
         assertEquals(4, note.getValue());
         assertEquals(4, composition.getMeasure(1).getNote(1, 1).getValue());
     }
