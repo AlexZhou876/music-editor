@@ -20,7 +20,7 @@ public class MeasureTest {
 
     @Test
     public void testConstructor() {
-        assertEquals(4, measure.getNumBeats());
+        assertEquals(4, measure.getBeatNumber());
         assertEquals(4, measure.getBeatType());
     }
 
@@ -81,9 +81,9 @@ public class MeasureTest {
     @Test
     public void testGetGlobalStart() {
         composition.addMeasure(measure);
-        assertEquals(1, measure.getGlobalStart());
+        assertEquals(1, measure.getGlobalStartTick());
         composition.addMeasures(1, 0, 4, 4);
-        assertEquals(5, measure.getGlobalStart());
+        assertEquals(5, measure.getGlobalStartTick());
     }
 
     @Test
@@ -91,8 +91,8 @@ public class MeasureTest {
         composition.addMeasure(new Measure(3, 4));
         composition.addMeasure(measure);
         composition.addMeasure(new Measure(2, 2));
-        assertEquals(3, measure.getLast().getNumBeats());
-        assertEquals(2, measure.getNext().getNumBeats());
+        assertEquals(3, measure.getLast().getBeatNumber());
+        assertEquals(2, measure.getNext().getBeatNumber());
     }
 
     @Test

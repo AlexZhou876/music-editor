@@ -5,17 +5,27 @@ import model.Measure;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
-// does this even need to implement scrollable?
-public class CompositionPanel extends JPanel implements Scrollable {
+// a beat refers to a quarter beat.
+public class CompositionPanel extends JPanel implements ActionListener, Scrollable {
     private int playLineColumn;
     private GraphicalEditorApp editor;
     private Composition composition;
+
+    public static final int DEFAULT_BPM = 80;
+
     public static final int MAXIMUM_BEAT_WIDTH = 512;
     public static final int MINIMUM_BEAT_WIDTH = 16;
-    public static int BEAT_WIDTH = 64; //50
-    public static final int BAR_WIDTH = 4 * BEAT_WIDTH; // note: reimplement the usage of BAR_WIDTH so that this const
-    // it is no longer needed.
+    public static final int ZOOM_INTERVAL = 10;
+
+    public static int bpm;
+    //public static int resolution = 4; // initial tick is a 16th note
+    public static int tickWidth = 16;
+    //public static int beatWidth = tickWidth * resolution; //50, then tried 64
+    public static int beatWidth = 64;
     public static final int SEMITONE_HEIGHT = 10;
 
 
@@ -24,14 +34,74 @@ public class CompositionPanel extends JPanel implements Scrollable {
         setBackground(Color.black);
         composition = new Composition(numMeasures, beatNum, beatType);
         this.editor = editor;
+        bpm = DEFAULT_BPM;
+    }
+
+    @Override
+    // MODIFIES: this
+    // EFFECTS: update this every time the timer fires by incrementing playLineColumn by one screen coordinate
+    // and scroll following.
+    public void actionPerformed(ActionEvent e) {
+        playLineColumn += 1;
+        repaint();
+        followPlaying();
+        //if (editor.getMasterTimer().getDelay() == )
+    }
+
+    // MODIFIES: this
+    // EFFECTS: stops the timer and resets the playLineColumn to 0.
+    public void stopPlaying() {
+        editor.getMasterTimer().stop();
+        playLineColumn = 0;
+        repaint();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets the value of beatWidth and makes sure invariant relationships between static variables
+    // are maintained.
+    // value writes even of public static variables should be done locally and in one place so the repercussions can be
+    // handled in one place.
+    public void setBeatWidth(int newBeatWidth) {
+        float factor = (float) newBeatWidth / (float) beatWidth;
+        beatWidth = newBeatWidth;
+        tickWidth = Math.round(factor * tickWidth);
+    }
+
+    // EFFECTS: gets the end of the composition panel in screen x coordinate.
+    // OUTDATED
+    public int getEnd() {
+        int totalBeats = composition.getNumBeats();
+        return totalBeats * beatWidth;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: changes the dimensions of this. If the new width is greater than the starting width, assign
+    // the new width. Otherwise do nothing.
+    public void resize() {
+        if (getEnd() > editor.WIDTH) {
+            setPreferredSize(new Dimension(getEnd(), editor.HEIGHT));
+        }
+        revalidate();
+    }
+
+    public void setBPM(int newBPM) {
+        bpm = newBPM;
     }
 
     public Composition getComposition() {
         return composition;
     }
 
+
+    // EFFECTS: sets composition to the given one, and ensures that the ratio of tickwidth to beatwidth
+    // obeys the resolution of the composition.
     public void setComposition(Composition composition) {
         this.composition = composition;
+        int amount = beatWidth / Composition.resolution;
+        if (amount == 0) {
+            amount = 1;
+        }
+        tickWidth = amount;
     }
 
 
@@ -55,17 +125,9 @@ public class CompositionPanel extends JPanel implements Scrollable {
         Color save = graphics.getColor();
         graphics.setColor(new Color(100, 100, 200));
         // 100 100 200
-        /* this implementation depends on constant bar width
-        for (int measureNum = 0; measureNum < composition.getListOfMeasure().size(); measureNum++) {
-            int x = BAR_WIDTH * (measureNum + 1);
-            graphics.drawLine(x, 0, x, getHeight());
-            endX = x;
-        }
 
-         */
-        int x = 0;
-        for (int measureNum = 0; measureNum < composition.getListOfMeasure().size(); measureNum++) {
-            x = x + (composition.getListOfMeasure().get(measureNum).getNumBeats() * BEAT_WIDTH);
+        List<Integer> positions = composition.getPositionsOfMeasureLines();
+        for (Integer x : positions) {
             graphics.drawLine(x, 0, x, getHeight());
             endX = x;
         }
@@ -73,6 +135,7 @@ public class CompositionPanel extends JPanel implements Scrollable {
         for (int y = SEMITONE_HEIGHT; y < getHeight(); y += SEMITONE_HEIGHT) {
             graphics.drawLine(0, y, endX, y);
         }
+
         if (playLineColumn > 0 && playLineColumn < getWidth()) {
             graphics.setColor(Color.RED);
             graphics.drawLine(playLineColumn, 0, playLineColumn, getHeight());
@@ -92,6 +155,9 @@ public class CompositionPanel extends JPanel implements Scrollable {
         int leftEndOfView = playLineColumn - (editor.WIDTH / 2);
         editor.getScroller().getHorizontalScrollBar().setValue(leftEndOfView);
     }
+
+
+
     
 
     @Override
@@ -118,4 +184,6 @@ public class CompositionPanel extends JPanel implements Scrollable {
     public boolean getScrollableTracksViewportHeight() {
         return false;
     }
+
+
 }

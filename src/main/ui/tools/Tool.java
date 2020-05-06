@@ -44,11 +44,12 @@ public abstract class Tool {
     // EFFECTS: changes the size of the compositionPanel. If the new width is greater than the starting width, assign
     // the new width. Otherwise do nothing.
     protected void resizeCompositionPanel() {
-        int end = editor.getCompositionPanel().getComposition().getEnd();
-        if (end > editor.WIDTH) {
-            editor.getCompositionPanel().setPreferredSize(new Dimension(end, editor.HEIGHT));
-            editor.getCompositionPanel().revalidate();
-        }
+        //int end = editor.getCompositionPanel().getEnd();
+        //if (end > editor.WIDTH) {
+           // editor.getCompositionPanel().setPreferredSize(new Dimension(end, editor.HEIGHT));
+            //editor.getCompositionPanel().revalidate();
+        //}
+        editor.getCompositionPanel().resize();
     }
 
     // getters

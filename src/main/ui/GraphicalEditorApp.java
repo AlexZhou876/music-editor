@@ -15,16 +15,18 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import static model.Composition.SEMITONE_HEIGHT;
+import static ui.CompositionPanel.SEMITONE_HEIGHT;
 
 public class GraphicalEditorApp extends JFrame {
     public static final int WIDTH = 1500;
     public static final int HEIGHT = SEMITONE_HEIGHT * 88;
     //public static final int HEIGHT = SEMITONE_HEIGHT * 70;
+    //public static final String SAVE_FILE = "./data/saveFile.mid";
     public static final String SAVE_FILE = "./data/saveFile.mid";
 
     private MidiSynth midiSynth;
     private EntirePlayer player;
+    private Timer masterTimer;
 
     private CompositionPanel compositionPanel;
     private JScrollPane scroller;
@@ -82,10 +84,12 @@ public class GraphicalEditorApp extends JFrame {
     // MODIFIES: this
     // EFFECTS: changes composition to the one contained in the save file
     private void loadProject() {
+
         compositionPanel.setComposition(Reader.readFile(new File(SAVE_FILE)));
         compositionPanel.getComposition().addMidiSynthToAll(midiSynth);
-        //compositionPanel = Reader.readFile(new File(SAVE_FILE));
-        //compositionPanel.addMidiSynthToAll(midiSynth);
+        // important!!
+        player.setComposition(compositionPanel.getComposition());
+
         repaint();
     }
 
@@ -149,10 +153,12 @@ public class GraphicalEditorApp extends JFrame {
 
         RemoveMeasuresTool removeMeasuresTool = new RemoveMeasuresTool(this, toolbar);
 
-
-        player = new EntirePlayer(compositionPanel, new Timer(0,null), null);
+        masterTimer = new Timer(0, null);
+        player = new EntirePlayer(compositionPanel.getComposition(), null, null);
         PlayEntireTool playEntireTool = new PlayEntireTool(this, toolbar, player);
         player.setTool(playEntireTool);
+        //player.setCompositionPanel(compositionPanel);
+
 
         SaveTool saveTool = new SaveTool(this, toolbar);
 
@@ -161,6 +167,14 @@ public class GraphicalEditorApp extends JFrame {
 
     public EntirePlayer getPlayer() {
         return player;
+    }
+
+    public Timer getMasterTimer() {
+        return masterTimer;
+    }
+
+    public void setMasterTimer(Timer masterTimer) {
+        this.masterTimer = masterTimer;
     }
 
     // MODIFIES: this

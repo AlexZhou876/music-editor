@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CompositionTest {
     Composition piece;
@@ -38,7 +39,7 @@ class CompositionTest {
         assertEquals(4, piece.getNumMeasures());
         assertEquals(15, piece.getNumBeats());
         // tests whether the added measure is in correct position
-        assertEquals(3, piece.getMeasure(4).getNumBeats());
+        assertEquals(3, piece.getMeasure(4).getBeatNumber());
     }
 
     @Test
@@ -47,7 +48,7 @@ class CompositionTest {
         assertEquals(4, piece.getNumMeasures());
         assertEquals(15, piece.getNumBeats());
         // tests whether the added measure is in correct position
-        assertEquals(3, piece.getMeasure(3).getNumBeats());
+        assertEquals(3, piece.getMeasure(3).getBeatNumber());
     }
 
     @Test
@@ -56,9 +57,9 @@ class CompositionTest {
         assertEquals(6, piece.getNumMeasures());
         assertEquals(21, piece.getNumBeats());
         // tests whether the added measures are in correct position
-        assertEquals(3, piece.getMeasure(4).getNumBeats());
-        assertEquals(3, piece.getMeasure(5).getNumBeats());
-        assertEquals(3, piece.getMeasure(6).getNumBeats());
+        assertEquals(3, piece.getMeasure(4).getBeatNumber());
+        assertEquals(3, piece.getMeasure(5).getBeatNumber());
+        assertEquals(3, piece.getMeasure(6).getBeatNumber());
     }
 
     @Test
@@ -95,6 +96,14 @@ class CompositionTest {
         assertEquals("" + "\n" + "Measure" + 1 + "\n" + "\n" + "Measure" + 2 + "\n"
                 + "\n" + "Measure" + 3 + "\n" + "\n" + "Measure" + 4 + "\n", output);
 
+    }
+
+    @Test
+    public void testGetMeasureAtBeat() {
+        assertEquals(piece.getMeasure(1), piece.getMeasureAtBeat(1));
+        assertEquals(piece.getMeasure(2), piece.getMeasureAtBeat(5));
+        assertEquals(piece.getMeasure(3), piece.getMeasureAtBeat(9));
+        assertNull(piece.getMeasureAtBeat(13));
     }
 
 

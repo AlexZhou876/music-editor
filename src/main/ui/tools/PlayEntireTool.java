@@ -1,5 +1,7 @@
 package ui.tools;
 
+import ui.CompositionPanel;
+import model.Composition;
 import ui.GraphicalEditorApp;
 import ui.players.EntirePlayer;
 
@@ -11,6 +13,8 @@ import java.awt.event.ActionListener;
 public class PlayEntireTool extends Tool {
     private boolean playing;
     private EntirePlayer player;
+    private Timer timer;
+    public static final int MILLISECONDS_PER_MINUTE = 60000;
 
     public PlayEntireTool(GraphicalEditorApp editor, JComponent parent, EntirePlayer player) {
         super(editor, parent);
@@ -31,20 +35,57 @@ public class PlayEntireTool extends Tool {
 
     }
 
+    // MODIFIES: player
+    // EFFECTS: take the BPM specified in CompositionPanel and return timer delay value in milliseconds.
+    private int convertBPMtoGraphicsTimerDelay() {
+        int bpm =  CompositionPanel.bpm;
+        float beatsPerMs = ((float) bpm / (float) MILLISECONDS_PER_MINUTE);
+        float ticksPerMs = beatsPerMs * (float) Composition.resolution;
+        float screenCoordinatesPerMs = ticksPerMs * CompositionPanel.beatWidth; // tickwidth
+        int timerDelay = Math.round(1 / screenCoordinatesPerMs);
+        return timerDelay;
+    }
+
+    private int convertBPMtoPlayerTimerDelay() {
+        int bpm =  CompositionPanel.bpm;
+        float beatsPerMs = ((float) bpm / (float) MILLISECONDS_PER_MINUTE);
+        float ticksPerMs = beatsPerMs * (float) Composition.resolution;
+        int playerTimerDelay = Math.round(1 / ticksPerMs);
+        return playerTimerDelay;
+
+    }
+
     // EFFECTS: plays the entire composition from the beginning.
     private void play() {
-        final Timer timer = new Timer(10, null);
-        player.setTimer(timer);
-        ActionListener a = player;
-        timer.addActionListener(a);
-        timer.setInitialDelay(0);
-        timer.start();
+        int masterTimerDelay = convertBPMtoGraphicsTimerDelay();
+        int playerTimerDelay = convertBPMtoPlayerTimerDelay();
+        int compromisePlayerTimerDelay = masterTimerDelay * CompositionPanel.beatWidth;
+       // editor.getMasterTimer().setDelay(masterTimerDelay);
+
+        final Timer newMasterTimer = new Timer(1 * masterTimerDelay, null);
+        final Timer playerTimer = new Timer(compromisePlayerTimerDelay, null);
+
+
+
+        player.setTimer(playerTimer);
+        editor.setMasterTimer(newMasterTimer);
+
+
+        playerTimer.addActionListener(player);
+        //playerTimer.addActionListener(editor.getCompositionPanel());
+        newMasterTimer.addActionListener(editor.getCompositionPanel());
+
+        playerTimer.setInitialDelay(0);
+        playerTimer.start();
+        newMasterTimer.setInitialDelay(0);
+        newMasterTimer.start();
     }
 
     // EFFECTS: Stop the playing and set playing to false.
     public void stop() {
         //playing = false;
         player.stopPlaying();
+        editor.getCompositionPanel().stopPlaying();
         player.setPlaying(false);
         button.setText("Play!");
     }

@@ -58,7 +58,7 @@ public class AddNoteTool extends Tool {
     // EFFECTS: sets bounds of this note to where mouse is dragged to
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (e.getPoint().getX() < editor.getCompositionPanel().getComposition().getEnd()) {
+        if (e.getPoint().getX() < editor.getCompositionPanel().getEnd()) {
             try {
                 note.setBounds(e.getPoint().getX());
             } catch (InvalidTargetValue invalidTargetValue) {
@@ -79,11 +79,25 @@ public class AddNoteTool extends Tool {
     // pitch counts from bottom while y coordinate counts from top
     private void createNote(MouseEvent e) {
         int pitch =  88 - ((int) e.getPoint().getY()) / SEMITONE_HEIGHT;
-        int measureNum = 1 + ((int) e.getPoint().getX()) / BAR_WIDTH;
-        int globalStart = 1 + ((int) e.getPoint().getX()) / BEAT_WIDTH;
-        measure = editor.getCompositionPanel().getComposition().getMeasure(measureNum);
+        measure = getMeasureWithX((int) e.getPoint().getX());
+        int globalStart = 1 + ((int) e.getPoint().getX()) / tickWidth;
         note = new Note(measure, globalStart, 1, pitch, editor.getMidiSynth());
-        // maybe value should be 1
+    }
+
+    /*
+    // EFFECTS: takes the x screen coordinate of the click and returns the measure it falls into.
+    // Warning: assumes beats have uniform number of ticks.
+    private Measure getMeasureWithX(int x) {
+        int beat = 1 + x / beatWidth;
+        return editor.getCompositionPanel().getComposition().getMeasureAtBeat(beat);
+    }
+
+     */
+
+    // EFFECTS: takes x screen coordinate of the click and returns the measure it falls into.
+    private Measure getMeasureWithX(int x) {
+        int tick = 1 + x / tickWidth;
+        return editor.getCompositionPanel().getComposition().getMeasureAtTick(tick);
     }
 
     private class AddNoteToolClickHandler implements ActionListener {

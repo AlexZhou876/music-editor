@@ -4,13 +4,11 @@ import exceptions.InvalidTargetValue;
 import ui.sound.MidiSynth;
 
 import java.awt.*;
-import java.util.Observable;
-import java.util.Observer;
 
-import static model.Composition.*;
+import static ui.CompositionPanel.*;
 
-// class representing a music note, with starting time with respect to beats in the measure, note value
-// with respect to beats in the measure, and pitch [1,88]
+// class representing a music note, with starting time with respect to global ticks, note value
+// with respect to global ticks, and pitch [1,88]
 public class Note {
     public static final int PLACEHOLDER_VOLUME = 100;
     public static final int PLACEHOLDER_INSTRUMENT = 1; // midi program change values
@@ -27,7 +25,7 @@ public class Note {
 
     // this constructor is obsolete
     // REQUIRES: start is a time value within the measure
-    // EFFECTS: constructs a Note given a start time (beat), value, and pitch.
+    // EFFECTS: constructs a Note given a start time (tick), value, and pitch.
     public Note(int start, int value, int pitch) {
         this.globalStart = start;
         this.value = value;
@@ -66,17 +64,18 @@ public class Note {
         return x >= modelTimeToXCoord(globalStart) && x <= modelTimeToXCoord(globalStart + value);
     }
 
+    // EFFECTS: returns true if start tick <= given tick < end tick, false otherwise.
+    public boolean containsTick(int tick) {
+        return globalStart <= tick && tick < (globalStart + value);
+    }
+
     // MODIFIES: this
     // EFFECTS:  If the point dragged to indicates a different location for the note selected than where it already is,
     //           move the note to that location. Manage the playing of the note during the transition.
+    // assume for now that notes lock to ticks rather than any larger beats or nudge widths.
     public void move(Point draggedTo) {
         boolean noteChanges;
-        /*
-        noteChanges = Math.abs(draggedTo.getY() - pitchToYCoord(pitch)) > SEMITONE_HEIGHT
-                || Math.abs(draggedTo.getX() - modelTimeToXCoord(globalStart)) > BEAT_WIDTH;
-
-         */
-        int newGlobalStart = 1 + ((int) draggedTo.getX()) / BEAT_WIDTH;
+        int newGlobalStart = 1 + ((int) draggedTo.getX()) / tickWidth;
         int newGlobalEnd = newGlobalStart + value;
         int newPitch = 88 - ((int) draggedTo.getY()) / SEMITONE_HEIGHT;
         noteChanges = newGlobalStart != globalStart || newPitch != pitch;
@@ -92,8 +91,8 @@ public class Note {
     // MODIFIES: this
     // EFFECTS: if the note has been moved to a different measure, assign this note to that measure.
     private void changeAssignedMeasure(int newGlobalStart) {
-        int leftEndPoint = measure.getGlobalStart();
-        int rightEndPoint = leftEndPoint + measure.getNumBeats() - 1;
+        int leftEndPoint = measure.getGlobalStartTick();
+        int rightEndPoint = leftEndPoint + measure.getNumTicks();
         if (newGlobalStart > rightEndPoint) {
             assignToMeasure(measure.getNext());
         } else if (newGlobalStart < leftEndPoint) {
@@ -102,10 +101,11 @@ public class Note {
     }
 
 
-    // EFFECTS: returns true if the starting time and pitch given are in the composition.
+    // EFFECTS: returns true if the end time and pitch given are in the composition.
     private boolean inBounds(int end, int pitch) {
-        int totalBeats = measure.getComposition().getNumBeats();
-        return end - 1 <= totalBeats && end >= 1 && pitch <= 88 && pitch >= 1;
+        int totalTicks = measure.getComposition().getNumTicks();
+        //int totalBeats = measure.getComposition().getNumBeats();
+        return end - 1 <= totalTicks && end >= 1 && pitch <= 88 && pitch >= 1;
     }
 
     // EFFECTS: converts model pitch values to y screen coordinate
@@ -113,18 +113,21 @@ public class Note {
         return (88 - pitch) * SEMITONE_HEIGHT + SEMITONE_HEIGHT;
     }
 
-    // EFFECTS: converts model beat values to x screen coordinate
-    private int modelTimeToXCoord(int beat) {
-        return (beat - 1) * BEAT_WIDTH;
+
+
+    private int modelTimeToXCoord(int tick) {
+        return (tick - 1) * tickWidth;
     }
+
+
 
     // EFFECTS: draws this note on the composition, if selected, note is filled in,
     // otherwise it is white.
     public void draw(Graphics graphics) {
-        int x = (globalStart - 1) * BEAT_WIDTH;
+        int x = (globalStart - 1) * tickWidth;
         int y = (88 - pitch) * SEMITONE_HEIGHT;
         int height = SEMITONE_HEIGHT;
-        int width = value * BEAT_WIDTH;
+        int width = value * tickWidth;
         Color save = graphics.getColor();
         if (selected) {
             graphics.setColor(PLAYING);
@@ -205,9 +208,9 @@ public class Note {
     // EFFECTS: changes the value of this note depending on coordinate dragged to. If dragged left of start or right of
     // composition end, throw InvalidTargetValue.
     public void setBounds(double draggedToX) throws InvalidTargetValue {
-        int globalEnd = 2 + ((int) (draggedToX / BEAT_WIDTH));
+        int globalEnd = 2 + ((int) (draggedToX / tickWidth));
         // why +2: imagine if draggedToX/BEAT_WIDTH = 0. Then the note starts on 1 and ends on 2.
-        if (globalEnd - 1 < globalStart || globalEnd - 1 > measure.getComposition().getNumBeats()) {
+        if (globalEnd - 1 < globalStart || globalEnd - 1 > measure.getComposition().getNumTicks()) {
             throw new InvalidTargetValue();
         }
         value = globalEnd - globalStart;
@@ -215,10 +218,10 @@ public class Note {
 
 
     // MODIFIES: this
-    // EFFECTS: value is set to target. If target is invalid, throws InvalidTargetValue.
+    // EFFECTS: value is set to target in ticks. If target is invalid, throws InvalidTargetValue.
     public void resizeNote(int target) throws InvalidTargetValue {
         int globalEnd = globalStart + target;
-        if (globalEnd - 1 > measure.getComposition().getNumBeats() || globalEnd <= globalStart) {
+        if (globalEnd - 1 > measure.getComposition().getNumTicks() || globalEnd <= globalStart) {
             throw new InvalidTargetValue();
         }
         value = target;
@@ -240,7 +243,7 @@ public class Note {
 
     // MODIFIES: this
     // EFFECTS: moves the start time of the note to beat #target
-    public void moveTime(int target) {
+    public void setGlobalStart(int target) {
         globalStart = target;
     }
 
@@ -258,7 +261,7 @@ public class Note {
     // REQUIRES: a valid value for target (within pitch range of composition [1, 88])
     // MODIFIES: this
     // EFFECTS: the pitch of the note is set to target.
-    public void movePitch(int target) {
+    public void setPitch(int target) {
         pitch = target;
     }
 /*

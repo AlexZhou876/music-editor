@@ -1,7 +1,6 @@
 package ui.tools;
 
 import ui.GraphicalEditorApp;
-import ui.players.EntirePlayer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -17,21 +16,33 @@ public class NavigationBar extends JToolBar {
     private JTextField measureNum;
     private JButton playFrom;
     private JTextField playFromNum;
+    private JButton setTempo;
+    private JTextField tempo;
     private GraphicalEditorApp parent;
 
     public NavigationBar(String label, JButton button, JTextField field, GraphicalEditorApp parent) {
         super(label);
         jumpTo = button;
         this.measureNum = field;
-        add(button);
-        add(field);
-
         zoomIn = new JButton("+");
         zoomOut = new JButton("-");
         setZoom = new JButton("Set Zoom");
         playFrom = new JButton("Play From");
         playFromNum = new JTextField();
+        tempo = new JTextField();
+        setTempo = new JButton("Set Tempo (BPM)");
+        this.parent = parent;
+        add(button);
+        add(field);
+        addUIElements();
 
+    }
+
+    private void initializeFieldsAndUIElements() {
+
+    }
+
+    private void addUIElements() {
         addSeparator();
         add(zoomIn);
         add(zoomOut);
@@ -39,12 +50,10 @@ public class NavigationBar extends JToolBar {
         addSeparator();
         add(playFrom);
         add(playFromNum);
-
-
-
-
+        addSeparator();
+        add(setTempo);
+        add(tempo);
         addListeners();
-        this.parent = parent;
     }
 
     private void addListeners() {
@@ -52,6 +61,7 @@ public class NavigationBar extends JToolBar {
         zoomIn.addActionListener(new ZoomInClickHandler());
         zoomOut.addActionListener(new ZoomOutClickHandler());
         playFrom.addActionListener(new PlayFromClickHandler());
+        setTempo.addActionListener(new SetTempoClickHandler());
         //setZoom.addActionListener();
     }
 
@@ -60,8 +70,10 @@ public class NavigationBar extends JToolBar {
         public void actionPerformed(ActionEvent e) {
             try {
                 int numToJumpTo = Integer.parseInt(measureNum.getText());
-                int coordToJumpTo = (parent.getCompositionPanel()
-                        .getComposition().getMeasure(numToJumpTo).getGlobalStart() - 1) * BEAT_WIDTH;
+                //int coordToJumpTo = (parent.getCompositionPanel()
+                  //      .getComposition().getMeasure(numToJumpTo).getGlobalStartTick() - 1) * beatWidth;
+                int coordToJumpTo = parent.getCompositionPanel().getComposition().getMeasure(numToJumpTo)
+                        .getGlobalStartTick() * tickWidth;
                 parent.getScroller().getHorizontalScrollBar().setValue(coordToJumpTo);
             } catch (NumberFormatException exc) {
                 exc.printStackTrace();
@@ -72,8 +84,10 @@ public class NavigationBar extends JToolBar {
     private class ZoomInClickHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (BEAT_WIDTH < MAXIMUM_BEAT_WIDTH) {
-                BEAT_WIDTH *= 2;
+            if (beatWidth < MAXIMUM_BEAT_WIDTH) {
+                //beatWidth += ZOOM_INTERVAL;
+                parent.getCompositionPanel().setBeatWidth(beatWidth + ZOOM_INTERVAL);
+                parent.getCompositionPanel().resize();
                 parent.repaint();
             }
         }
@@ -82,8 +96,10 @@ public class NavigationBar extends JToolBar {
     private class ZoomOutClickHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (BEAT_WIDTH > MINIMUM_BEAT_WIDTH) {
-                BEAT_WIDTH /= 2;
+            if (beatWidth > MINIMUM_BEAT_WIDTH) {
+                //beatWidth -= ZOOM_INTERVAL;
+                parent.getCompositionPanel().setBeatWidth(beatWidth - ZOOM_INTERVAL);
+                parent.getCompositionPanel().resize();
                 parent.repaint();
             }
         }
@@ -94,15 +110,28 @@ public class NavigationBar extends JToolBar {
         public void actionPerformed(ActionEvent e) {
             try {
                 int measure = Integer.parseInt(playFromNum.getText());
-                int start = BEAT_WIDTH
-                        * (parent.getCompositionPanel().getComposition().getMeasure(measure).getGlobalStart() - 1);
+                int start = beatWidth
+                        * (parent.getCompositionPanel().getComposition().getMeasure(measure).getGlobalStartTick() - 1);
                 parent.getCompositionPanel().setPlayLineColumn(start);
-                parent.getPlayer().setPlayingColumn(start);
+                parent.getPlayer().setPlayingTick(start);
 
 
             } catch (NumberFormatException exc) {
                 exc.printStackTrace();
             }
+        }
+    }
+
+    private class SetTempoClickHandler implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                int newBPM = Integer.parseInt(tempo.getText());
+                parent.getCompositionPanel().setBPM(newBPM);
+            } catch (NumberFormatException exc) {
+                exc.printStackTrace();
+            }
+
         }
     }
 }

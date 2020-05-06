@@ -5,13 +5,11 @@ import ui.sound.MidiSynth;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 // represents a measure (bar) with a collection of notes which start in the measure, a number of beats, a type (value)
 // of beats, and its position within the entire composition.
 // simple and compound meter is handled, but not complex meter.
-// observer pattern doesn't really seem to fit with the Measure and Note????
+
 public class Measure {
     private static final int PULSES_PER_COMPOUND_BEAT = 3;
     private List<Note> listOfNote;
@@ -26,13 +24,18 @@ public class Measure {
     public Measure(int beatNumber, int beatType, Composition composition, int measureNumber) {
         this.composition = composition;
         listOfNote = new ArrayList<Note>();
-        if (beatNumber % 3 == 0 && beatNumber != 3) {
+        if (compound(beatNumber)) {
             this.beatNumber = beatNumber / PULSES_PER_COMPOUND_BEAT;
         } else {
             this.beatNumber = beatNumber;
         }
         this.beatType = beatType;
         this.measureNumber = measureNumber;
+    }
+
+    // EFFECTS: return true if the time signature of this is compound, false otherwise.
+    private boolean compound(int beatNumber) {
+        return beatNumber % 3 == 0 && beatNumber != 3;
     }
 
     // same but allows an unassigned measure
@@ -58,11 +61,11 @@ public class Measure {
     // Measure numbers are never 0 in normal runtime.
     public void setMeasureNumber(int measureNumber) {
         if (this.measureNumber != measureNumber && this.measureNumber != 0) {
-            int oldMeasureNumber = this.measureNumber;
+            //int oldMeasureNumber = this.measureNumber;
             this.measureNumber = measureNumber;
-            int measureDiff = this.measureNumber - oldMeasureNumber;
-            updateNotes(measureDiff);
-        } else {
+            //int measureDiff = this.measureNumber - oldMeasureNumber;
+            //updateNotes(measureDiff);
+        } else { // case when measure has just been created and is assigned a number for the first time
             this.measureNumber = measureNumber;
         }
     }
@@ -71,21 +74,34 @@ public class Measure {
         return measureNumber;
     }
 
+    /*
     // MODIFIES: this
     // EFFECTS: gives notes their new global positions after measure number changes.
     private void updateNotes(int measureDiff) {
         int beatDiff = measureDiff * beatNumber;
         for (Note note: listOfNote) {
-            note.moveTime(note.getGlobalStart() + beatDiff);
+            note.setGlobalStart(note.getGlobalStart() + beatDiff);
+        }
+    }
+
+     */
+
+    // MODIIES: this
+    // EFFECTS: gives notes their new global positions according to the tick difference.
+    public void adjustNotes(int tickDiff) {
+        for (Note note: listOfNote) {
+            note.setGlobalStart(note.getGlobalStart() + tickDiff);
         }
     }
 
 
 
-    // EFFECTS: returns the global start beat of this measure.
-    public int getGlobalStart() {
+    // EFFECTS: returns the global start tick of this measure.
+    public int getGlobalStartTick() {
         return composition.getGlobalStartOf(this);
     }
+
+
 
     // EFFECTS: returns the measure before this one in the comp.
     public Measure getLast() {
@@ -144,8 +160,13 @@ public class Measure {
     }
 
     // EFFECTS: returns the number of beats in this measure
-    public int getNumBeats() {
+    public int getBeatNumber() {
         return beatNumber;
+    }
+
+    // EFFECTS: returns the number of ticks in this measure
+    public int getNumTicks() {
+        return Composition.resolution / beatType * 4 * beatNumber;
     }
 
     // EFFECTS: returns the type of beats in this measure

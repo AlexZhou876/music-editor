@@ -50,7 +50,7 @@ public class NoteTest {
 
     @Test
     public void testMoveTime1Param() {
-        note.moveTime(3);
+        note.setGlobalStart(3);
         assertEquals(3, note.getGlobalStart());
         assertEquals(1, composition.getMeasure(1).getNote(3, 1).getValue());
     }
@@ -66,7 +66,7 @@ public class NoteTest {
 
     @Test
     public void testMovePitch() {
-        note.movePitch(70);
+        note.setPitch(70);
         assertEquals(70, note.getPitch());
     }
 

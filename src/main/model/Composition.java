@@ -1,27 +1,29 @@
 package model;
 
-import ui.CompositionPanel;
 import ui.sound.MidiSynth;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import static ui.CompositionPanel.*;
 // consider splitting graphical responsibilities into new class
 
 // represents an entire composition, which is a collection of measures. The order of measures in the list is the order
 // of measures in the composition.
 public class Composition  { // used to extend JPanel
     private List<Measure> listOfMeasure;
-    private int beatsPerMinute;
+    //private int beatsPerMinute;
     private int beatNum;
     private int beatType;
     private int barWidth; // implement later
+    public static int resolution = 4;
+    // the resolution is the number of ticks per quarter beat.
 
     //private int playLineColumn; graphics responsibilities
-    public static int BEAT_WIDTH = CompositionPanel.BEAT_WIDTH;
-    public static int SEMITONE_HEIGHT = CompositionPanel.SEMITONE_HEIGHT;
+    //public static int BEAT_WIDTH = CompositionPanel.beatWidth;
+    //public static int SEMITONE_HEIGHT = CompositionPanel.SEMITONE_HEIGHT;
+    //public static int TICK_WIDTH = CompositionPanel.tickWidth;
 
     // REQUIRES: beatType is a power of 2
     // EFFECTS: instantiates a new composition with numMeasures measures, beatNum beats of type beatType per measure.
@@ -37,10 +39,35 @@ public class Composition  { // used to extend JPanel
         }
     }
 
-    // EFFECTS: gets the end of the composition in screen x coordinate.
-    public int getEnd() {
-        int totalBeats = this.getNumBeats();
-        return totalBeats * BEAT_WIDTH;
+    public void setResolution(int resolution) {
+        Composition.resolution = resolution;
+    }
+
+    // OBSOLETE
+    // REQUIRES: beat > 0
+    // EFFECTS: returns the measure which has the given global beat within it. If none have the given beat, return null.
+    public Measure getMeasureAtBeat(int beat) {
+        int beatCount = 0;
+        for (Measure measure: listOfMeasure) {
+            beatCount += measure.getBeatNumber();
+            if (beatCount >= beat) {
+                return measure;
+            }
+        }
+        return null;
+    }
+
+    // REQUIRES: tick > 0
+    // EFFECTS: returns the measure which has the given tick within it. If none, return null.
+    public Measure getMeasureAtTick(int tick) {
+        int tickCount = 0;
+        for (Measure m: listOfMeasure) {
+            tickCount += m.getNumTicks();
+            if (tickCount >= tick) {
+                return m;
+            }
+        }
+        return null;
     }
 
     // EFFECTS: adds a midisynth to all notes.
@@ -50,33 +77,27 @@ public class Composition  { // used to extend JPanel
         }
     }
 
-    /*
-    // EFFECTS: gets a list of all notes in the composition.
-    public List<Note> getAllNotes() {
-        List<Note> notes = new ArrayList<>();
-        for (Measure measure : listOfMeasure) {
-            measure.getListOfNote();
-            List<String> newList = Stream.concat(listOne.stream(), listTwo.stream())
-                    .collect(Collectors.toList());
+    // EFFECTS: returns array containing the x screen coordinates of all measure lines in the composition.
+    public List<Integer> getPositionsOfMeasureLines() {
+        List<Integer> output = new ArrayList<Integer>();
+        output.add(0);
+        int tickCount = 0;
+        for (Measure m: listOfMeasure) {
+            tickCount += m.getNumTicks();
+            output.add(tickCount * tickWidth);
         }
+        return output;
     }
 
 
-
-    public void setPlayLineColumn(int target) {
-        playLineColumn = target;
-    }
-    */
-
-
-    // EFFECTS: returns the global start beat of the given measure.
+    // EFFECTS: returns the global start tick of the given measure.
     public int getGlobalStartOf(Measure measure) {
         int output = 0;
         for (Measure m: listOfMeasure) {
             if (!m.equals(measure)) {
-                output = output + m.getNumBeats();
+                output += m.getNumTicks();
             } else {
-                output = output + 1;
+                output++;
                 return output;
             }
         }
@@ -96,6 +117,7 @@ public class Composition  { // used to extend JPanel
     }
 
     // EFFECTS: returns list of notes at a given column in the composition.
+
     public List<Note> getNotesAtColumn(int x) {
         List<Note> notesAtColumn = new ArrayList<Note>();
         for (Measure m: listOfMeasure) {
@@ -107,6 +129,20 @@ public class Composition  { // used to extend JPanel
         }
         return notesAtColumn;
     }
+
+    // EFFECTS: returns list of notes at a given tick in the composition.
+    public List<Note> getNotesAtTick(int tick) {
+        List<Note> notesAtTick = new ArrayList<>();
+        for (Measure m: listOfMeasure) {
+            for (Note note : m.getListOfNote()) {
+                if (note.containsTick(tick)) {
+                    notesAtTick.add(note);
+                }
+            }
+        }
+        return notesAtTick;
+    }
+
 /* graphics responsibilities extracted
     // EFFECTS: paints grid, playing line, notes in composition.
     // calls to repaint() get here
@@ -172,14 +208,27 @@ public class Composition  { // used to extend JPanel
 
     // REQUIRES: there is a measure at every position specified.
     // MODIFIES: this
-    // EFFECTS: removes the specified measures from composition.
+    // EFFECTS: removes the specified measures from composition, and makes sure note positions and measure numbers
+    // resulting are updated.
     public void removeMeasures(List<Integer> listOfPos) {
         // reverse list to remove last first
+        Collections.sort(listOfPos); // have to sort first
         Collections.reverse(listOfPos);
         for (Integer pos : listOfPos) {
+            int tickDiff = -1 * listOfMeasure.get(pos - 1).getNumTicks();
+            updateNotePositions(tickDiff, pos); // pos - 1 + 1
             listOfMeasure.remove(pos - 1);
         }
         countAndNotifyMeasures();
+    }
+
+    // MODIFIES: this
+    // EFFECTS: for all measures from the one after the one to be removed until the end, adjust note starts by
+    // tickDiff.
+    private void updateNotePositions(int tickDiff, int index) {
+        for (int i = index; i < listOfMeasure.size(); i++) {
+            listOfMeasure.get(i).adjustNotes(tickDiff);
+        }
     }
 
     // EFFECTS: notifies all measures of their measure numbers.
@@ -200,9 +249,18 @@ public class Composition  { // used to extend JPanel
     public int getNumBeats() {
         int numBeats = 0;
         for (Measure measure : listOfMeasure) {
-            numBeats = numBeats + measure.getNumBeats();
+            numBeats = numBeats + measure.getBeatNumber();
         }
         return numBeats;
+    }
+
+    // EFFECTS: returns the total number of ticks in the composition.
+    public int getNumTicks() {
+        int numTicks = 0;
+        for (Measure measure : listOfMeasure) {
+            numTicks += measure.getNumTicks();
+        }
+        return numTicks;
     }
 
     // EFFECTS: returns the measure at pos

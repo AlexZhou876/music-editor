@@ -65,20 +65,26 @@ responsibilities. This improves cohesion.
 
 ## Continuation
 
-## Wish List/Todo
+## Wish List/Todo: Finish within a week.
 - disable other tools while playing is active
 - refactor player to not need association to model
 - separate out graphics responsibilities from model entirely using some sort of renderer class
 - selection of notes or a group of notes (using box select). Must be able to move the selected notes
 - copy and pasting of selected notes.
-- ability to pan and zoom in the 2d environment where the piece is displayed. (pan: done. Zoom: incomplete)
+- change the tempo of playback
+- ability to pan and zoom in the 2d environment where the piece is displayed. (pan: done. Zoom: done horizontally, need vertically)
 - ability to play the composition from a starting point (implemented)
-- ability to undo last action
+- ability to undo last action (weird one, maybe ignore for now)
 - have text annotations, including title and credits at the beginning
-- separate piece into different voices, like layers in an image editing app
+- separate piece into different voices, like layers in an image editing app (ignore on first pass)
 - different instruments
+- import and correctly interpret midi files (fractional note values) export correct midi files
 
 ## Bugs
+note: bug with play mode not ending is due to incomplete transition from beats to ticks. 
+Measure.getNumTicks()
+
+
 - notes in a measure do not change position when their measure changes position due to removal of other measures (fixed)
 (note: solution not most efficient, because all measures are counted while they don't all need to be. But this is low concern)
 - notes touching the very end of the composition do not stop playing and are still selected (fixed)
