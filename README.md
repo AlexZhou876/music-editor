@@ -88,6 +88,8 @@ responsibilities. This improves cohesion.
 - note immediately following note of the same pitch fails to sound correctly (fixed)
 - saving and loading doesn't work properly (there may be problems with saving)
 - when adding note, able to drag it to negative value (fixed)
+- user specified tempo changes have little effect when the resolution is too high as the timer delay is at its minimum value.
+- timer controlling playback progress line/auto scrolling and timer controlling playback are not in sync.
 
 
 
