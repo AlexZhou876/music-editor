@@ -1,4 +1,4 @@
-# My Personal Project
+# Music Editor
 
 ## Instructions 
 This is a music editor. It is created using the IntelliJ IDEA IDE. To use, run Main.main. It is mouse interactive and graphically displays your input.
