@@ -22,7 +22,7 @@ public class GraphicalEditorApp extends JFrame {
     public static final int HEIGHT = SEMITONE_HEIGHT * 88;
     //public static final int HEIGHT = SEMITONE_HEIGHT * 70;
     //public static final String SAVE_FILE = "./data/saveFile.mid";
-    public static final String SAVE_FILE = "./data/saveFile.mid";
+    public static final String SAVE_FILE = "./data/bwv772.mid";
 
     private MidiSynth midiSynth;
     private EntirePlayer player;

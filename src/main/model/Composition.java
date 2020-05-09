@@ -133,6 +133,7 @@ public class Composition  { // used to extend JPanel
     // EFFECTS: returns list of notes at a given tick in the composition.
     public List<Note> getNotesAtTick(int tick) {
         List<Note> notesAtTick = new ArrayList<>();
+        /*
         for (Measure m: listOfMeasure) {
             for (Note note : m.getListOfNote()) {
                 if (note.containsTick(tick)) {
@@ -140,44 +141,20 @@ public class Composition  { // used to extend JPanel
                 }
             }
         }
+
+         */
+
+        int ticksPerMeasure = listOfMeasure.get(0).getNumTicks();
+        int index = tick / ticksPerMeasure;
+        Measure measure = listOfMeasure.get(index);
+        for (Note note : measure.getListOfNote()) {
+            if (note.containsTick(tick)) {
+                notesAtTick.add(note);
+            }
+        }
         return notesAtTick;
+
     }
-
-/* graphics responsibilities extracted
-    // EFFECTS: paints grid, playing line, notes in composition.
-    // calls to repaint() get here
-    @Override
-    public void paintComponent(Graphics graphics) {
-        super.paintComponent(graphics);
-        drawLines(graphics);
-        // it may be better for measure.draw to draw bar lines.
-        for (Measure measure : listOfMeasure) {
-            measure.draw(graphics);
-        }
-    }
-
-
-    // EFFECTS: draws semitone lines and bar lines
-    private void drawLines(Graphics graphics) {
-        int endX = 0;
-        Color save = graphics.getColor();
-        graphics.setColor(new Color(100, 100, 200));
-        for (int measureNum = 0; measureNum < listOfMeasure.size(); measureNum++) {
-            int x = BAR_WIDTH * (measureNum + 1);
-            graphics.drawLine(x, 0, x, getHeight());
-            endX = x;
-        }
-        for (int y = SEMITONE_HEIGHT; y < getHeight(); y += SEMITONE_HEIGHT) {
-            graphics.drawLine(0, y, endX, y);
-        }
-        if (playLineColumn > 0 && playLineColumn < getWidth()) {
-            graphics.setColor(Color.RED);
-            graphics.drawLine(playLineColumn, 0, playLineColumn, getHeight());
-        }
-        graphics.setColor(save);
-    }
-
- */
 
     // REQUIRES: pos <= number of measures, beatType is a power of 2
     // MODIFIES: this

@@ -18,7 +18,7 @@ public class CompositionPanel extends JPanel implements ActionListener, Scrollab
     public static final int DEFAULT_BPM = 80;
 
     public static final int MAXIMUM_BEAT_WIDTH = 512;
-    public static final int MINIMUM_BEAT_WIDTH = 16;
+    public static final int MINIMUM_BEAT_WIDTH = 1;
     public static final int ZOOM_INTERVAL = 10;
 
     public static int bpm;
@@ -70,8 +70,10 @@ public class CompositionPanel extends JPanel implements ActionListener, Scrollab
     // EFFECTS: gets the end of the composition panel in screen x coordinate.
     // OUTDATED
     public int getEnd() {
-        int totalBeats = composition.getNumBeats();
-        return totalBeats * beatWidth;
+        int totalTicks = composition.getNumTicks();
+        return totalTicks * tickWidth;
+        //int totalBeats = composition.getNumBeats();
+        //return totalBeats * beatWidth;
     }
 
     // MODIFIES: this
@@ -102,6 +104,7 @@ public class CompositionPanel extends JPanel implements ActionListener, Scrollab
             amount = 1;
         }
         tickWidth = amount;
+        resize();
     }
 
 
