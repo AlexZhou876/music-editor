@@ -1,7 +1,7 @@
 # My Personal Project
 
 ## Instructions 
-This is a music editor. To use, run Main.main. It is mouse interactive and graphically displays your input.
+This is a music editor. It is created using the IntelliJ IDEA IDE. To use, run Main.main. It is mouse interactive and graphically displays your input.
 - to add a note: click on the button on the toolbar labelled "Add Note".
 - press the mouse down within the bounds of a measure. A note appears.
 - while holding, drag the mouse to the right and left to change the length.
