@@ -1,6 +1,6 @@
 # My Personal Project
 
-## Instructions for Grader
+## Instructions 
 This is a music editor. To use, run Main.main. It is mouse interactive and graphically displays your input.
 - to add a note: click on the button on the toolbar labelled "Add Note".
 - press the mouse down within the bounds of a measure. A note appears.
@@ -10,8 +10,12 @@ you can also add measures to the composition.
 - to add a measure: click on the button labelled "Add Measures" 
 - enter a valid number
 - see the measures appear
-The visual component is clearly displayed. The audio component is triggered by hitting the Play! button.
-Unfortunately, I was unable to adapt persistence for this phase. Thank you for using. 
+you can edit a note by using the edit note button. Click on a note to select it, drag to move it. Use the arrow 
+keys to adjust the length of the note. Press the delete key (on Mac: fn-delete) to delete it. 
+
+you can save by pressing save. It will save to whatever the current path is set to in GraphicalEditorApp.
+to load, simply rerun and click the button on the dialog. For now, you can load external midi files by putting them in the
+same root directory and changing the path in GraphicalEditorApp.
 
 
 ## What Will the Application Do? 
@@ -28,13 +32,7 @@ The following is a list of specific planned functionality:
 - automatic, viewable analysis of music metacharacteristics, such as chord progression
 - ability for user to change a metacharacterstic and have the music change automatically
 
-## Who Will Use It? 
-This application will be useful for anyone interested in music/composition, students of music, or composers. 
-## Why is the project of interest to me? 
-this project is of interest primarily because I am interested in music, being a musician. 
-However, I've always struggled with theory and improvisation. Programming an application 
-like this will increase my understanding of music, and furthermore challenge and improve my programming 
-skills because of the specific demands of the domain. 
+
 
 ## User Stories
 - As a user, I want to be able to create a new note(s) with a start time, time value, pitch, and volume, 
@@ -65,7 +63,7 @@ responsibilities. This improves cohesion.
 
 ## Continuation
 
-## Wish List/Todo: Finish within a week.
+## Wish List/Todo: 
 - disable other tools while playing is active
 - refactor player to not need association to model
 - separate out graphics responsibilities from model entirely using some sort of renderer class
@@ -81,9 +79,6 @@ responsibilities. This improves cohesion.
 - import and correctly interpret midi files (fractional note values) export correct midi files
 
 ## Bugs
-note: bug with play mode not ending is due to incomplete transition from beats to ticks. 
-Measure.getNumTicks()
-
 
 - notes in a measure do not change position when their measure changes position due to removal of other measures (fixed)
 (note: solution not most efficient, because all measures are counted while they don't all need to be. But this is low concern)
@@ -94,7 +89,6 @@ Measure.getNumTicks()
 - note immediately following note of the same pitch fails to sound correctly
 - saving and loading doesn't work properly (fixed)
 - when adding note, able to drag it to negative value (fixed)
-MidiSynth is the class that handles sound. Only a single instance is currently used so it makes sense to make it 
-Singleton to preserve this behaviour.
-- FIX ALL MODULAR ARITHMETIC PROBLEMS!!!
+
+
 
