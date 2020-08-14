@@ -11,11 +11,11 @@ you can also add measures to the composition.
 - enter a valid number
 - see the measures appear
 you can edit a note by using the edit note button. Click on a note to select it, drag to move it. Use the arrow 
-keys to adjust the length of the note. Press the delete key (on Mac: fn-delete) to delete it. 
+keys to adjust the length of the note. Press the delete key (OSX: fn-delete) to delete it. 
 
 you can save by pressing save. It will save to whatever the current path is set to in GraphicalEditorApp.
-to load, simply rerun and click the button on the dialog. For now, you can load external midi files by putting them in the
-same root directory and changing the path in GraphicalEditorApp.
+to load the save, simply rerun and click the button on the dialog. For now, you can load external midi files by putting them in the
+same root directory and changing the path in GraphicalEditorApp. Note that behaviour is only specified for files with 4/4 time signature.
 
 
 ## What Will the Application Do? 

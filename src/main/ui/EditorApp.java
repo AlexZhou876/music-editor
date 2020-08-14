@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-// Music editor application
+// Music editor console application
 public class EditorApp {
     private Scanner input;
     private Composition piece;
