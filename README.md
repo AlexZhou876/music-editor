@@ -9,7 +9,7 @@ This is a music editor. It is created using the IntelliJ IDEA IDE. To use, run M
 you can also add measures to the composition.
 - to add a measure: click on the button labelled "Add Measures" 
 - enter a valid number
-- see the measures appear
+- see the measures appear,
 you can edit a note by using the edit note button. Click on a note to select it, drag to move it. Use the arrow 
 keys to adjust the length of the note. Press the delete key (OSX: fn-delete) to delete it. 
 
