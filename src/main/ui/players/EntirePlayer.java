@@ -103,20 +103,6 @@ public class EntirePlayer implements ActionListener {
     // MODIFIES: this
     // EFFECTS: selects and plays notes at current tick
     private void selectAndPlayNotes() {
-        /*
-        notesInColumn = compositionPanel.getComposition().getNotesAtColumn(playingTick);
-        for (Note note : lastColumnPlayed) {
-            if (!notesInColumn.contains(note)) {
-                note.unselectAndStopPlaying();
-            }
-        }
-        for (Note note : notesInColumn) {
-            if (!lastColumnPlayed.contains(note)) {
-                note.selectAndPlay();
-            }
-        }
-
-         */
         notesAtTick = composition.getNotesAtTick(playingTick);
         for (Note note : lastTickPlayed) {
             if (!notesAtTick.contains(note)) {
@@ -150,7 +136,7 @@ public class EntirePlayer implements ActionListener {
     // MODIFIES: this
     // EFFECTS:  moves current x-column to next column; updates figures
     private void incrementTick() {
-        playingTick += 1;
+        playingTick += 5;
         lastTickPlayed = notesAtTick;
     }
 

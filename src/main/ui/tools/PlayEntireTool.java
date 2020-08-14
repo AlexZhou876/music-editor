@@ -62,7 +62,7 @@ public class PlayEntireTool extends Tool {
         int compromisePlayerTimerDelay = masterTimerDelay * CompositionPanel.beatWidth;
        // editor.getMasterTimer().setDelay(masterTimerDelay);
 
-        final Timer newMasterTimer = new Timer(1 * masterTimerDelay, null);
+        final Timer newMasterTimer = new Timer(5 * masterTimerDelay, null);
         final Timer playerTimer = new Timer(compromisePlayerTimerDelay, null);
 
 

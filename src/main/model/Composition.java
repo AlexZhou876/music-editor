@@ -20,10 +20,6 @@ public class Composition  { // used to extend JPanel
     public static int resolution = 4;
     // the resolution is the number of ticks per quarter beat.
 
-    //private int playLineColumn; graphics responsibilities
-    //public static int BEAT_WIDTH = CompositionPanel.beatWidth;
-    //public static int SEMITONE_HEIGHT = CompositionPanel.SEMITONE_HEIGHT;
-    //public static int TICK_WIDTH = CompositionPanel.tickWidth;
 
     // REQUIRES: beatType is a power of 2
     // EFFECTS: instantiates a new composition with numMeasures measures, beatNum beats of type beatType per measure.
