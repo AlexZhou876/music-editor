@@ -1,7 +1,7 @@
-# My Personal Project
+# Music Editor
 
 ## Instructions 
-This is a music editor. To use, run Main.main. It is mouse interactive and graphically displays your input.
+This is a music editor. It is created using the IntelliJ IDEA IDE. To use, run Main.main. It is mouse interactive and graphically displays your input.
 - to add a note: click on the button on the toolbar labelled "Add Note".
 - press the mouse down within the bounds of a measure. A note appears.
 - while holding, drag the mouse to the right and left to change the length.
@@ -81,14 +81,15 @@ responsibilities. This improves cohesion.
 ## Bugs
 
 - notes in a measure do not change position when their measure changes position due to removal of other measures (fixed)
-(note: solution not most efficient, because all measures are counted while they don't all need to be. But this is low concern)
 - notes touching the very end of the composition do not stop playing and are still selected (fixed)
 - edit mode is still active in play mode (fixed)
 - notes can be extended past end of composition (fixed)
 - inappropriate error messages appear after closing or cancelling dialogs (fixed)
-- note immediately following note of the same pitch fails to sound correctly
-- saving and loading doesn't work properly (fixed)
+- note immediately following note of the same pitch fails to sound correctly (fixed)
+- saving and loading doesn't work properly (there may be problems with saving)
 - when adding note, able to drag it to negative value (fixed)
+- user specified tempo changes have little effect when the resolution is too high as the timer delay is at its minimum value.
+- timer controlling playback progress line/auto scrolling and timer controlling playback are not in sync.
 
 
 
