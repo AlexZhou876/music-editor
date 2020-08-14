@@ -18,7 +18,7 @@ to load the save, simply rerun and click the button on the dialog. For now, you 
 same root directory and changing the path in GraphicalEditorApp. Note that behaviour is only specified for files with 4/4 time signature.
 
 
-## What Will the Application Do? 
+## What Will the Application Do? .
 My project will be a music visualization and composition application. 
 It will allow users to quickly sketch and further develop musical compositions in a 2d environment 
 where the vertical axis represents pitch and the horizontal axis represents time. 
