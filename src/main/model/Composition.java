@@ -141,7 +141,7 @@ public class Composition  { // used to extend JPanel
          */
 
         int ticksPerMeasure = listOfMeasure.get(0).getNumTicks();
-        int index = tick / ticksPerMeasure;
+        int index = (tick - 1) / ticksPerMeasure;
         Measure measure = listOfMeasure.get(index);
         for (Note note : measure.getListOfNote()) {
             if (note.containsTick(tick)) {

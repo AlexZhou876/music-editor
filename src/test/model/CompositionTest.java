@@ -2,6 +2,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ui.sound.MidiSynth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +109,12 @@ class CompositionTest {
 
     @Test
     public void testGetNotesAtTick() {
-       
+        MidiSynth ms = new MidiSynth();
+       Measure m = piece.getMeasure(1);
+       Note n = new Note(m, 16, 1, 50, ms);
+       List<Note> expected = new ArrayList<Note>();
+       expected.add(n);
+       assertEquals(expected, piece.getNotesAtTick(16));
     }
 
 
