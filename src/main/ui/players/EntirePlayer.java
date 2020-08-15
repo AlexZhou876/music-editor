@@ -14,13 +14,11 @@ import java.util.Observable;
 
 // this is a subject (because scrolling follows the progress of the playing line)
 public class EntirePlayer implements ActionListener {
-
     private CompositionPanel compositionPanel;
     private Composition composition;
     private PlayEntireTool tool;
     private Timer timer;
     private int playingTick;
-    private int counter;
 
     private List<Note> lastTickPlayed;
     private List<Note> notesAtTick;
@@ -28,12 +26,10 @@ public class EntirePlayer implements ActionListener {
     private boolean playing;
 
     public EntirePlayer(Composition composition, Timer timer, PlayEntireTool tool) {
-        //this.compositionPanel = compositionPanel;
         this.composition = composition;
         this.tool = tool;
         this.timer = timer;
         playingTick = 1;
-        counter = 0;
         lastTickPlayed = new ArrayList<Note>();
         notesAtTick = new ArrayList<Note>();
         playing = false;
@@ -55,11 +51,8 @@ public class EntirePlayer implements ActionListener {
         this.tool = tool;
     }
 
-
-
     public void setPlayingTick(int playingTick) {
         this.playingTick = playingTick;
-        //compositionPanel.setPlayLineColumn(playingTick);
     }
 
     // MODIFIES: this
@@ -68,15 +61,9 @@ public class EntirePlayer implements ActionListener {
     //           each time through its loop.
     @Override
     public void actionPerformed(ActionEvent e) {
-       // if (counter % CompositionPanel.beatWidth == 0) {
         selectAndPlayNotes();
         incrementTick();
-            //drawRedLine();
-            //scrollFollowingColumn();
-        //correctProgressLine();
         stopPlayingWhenDone();
-        //}
-        //counter++;
     }
 
     // MODIFIES: CompositionPanel
@@ -90,19 +77,10 @@ public class EntirePlayer implements ActionListener {
         this.composition = composition;
     }
 
-    /*
-
-    // MODIFIES: this
-    // EFFECTS: sets the scroll location of scroller to follow the playing line.
-    private void scrollFollowingColumn() {
-        //compositionPanel.followPlaying();
-    }
-
-     */
-
     // MODIFIES: this
     // EFFECTS: selects and plays notes at current tick
     private void selectAndPlayNotes() {
+        // a dict/map based model of notes would be much more efficient.
         notesAtTick = composition.getNotesAtTick(playingTick);
         for (Note note : lastTickPlayed) {
             if (!notesAtTick.contains(note)) {
@@ -123,20 +101,11 @@ public class EntirePlayer implements ActionListener {
             note.unselectAndStopPlaying();
         }
     }
-/*
-    // MODIFIES: this
-    // EFFECTS:  moves playback line to playingColumn to trigger sound and repaint
-    private void drawRedLine() {
-
-        //compositionPanel.repaint(); // the Java Graphics framework will call paintComponent
-    }
-
- */
 
     // MODIFIES: this
     // EFFECTS:  moves current x-column to next column; updates figures
     private void incrementTick() {
-        playingTick += 5;
+        playingTick += 1;
         lastTickPlayed = notesAtTick;
     }
 
@@ -154,9 +123,6 @@ public class EntirePlayer implements ActionListener {
         timer.stop();
         unselectAndStopPlayingAll();
         playingTick = 1;
-
-
-
     }
 
 }

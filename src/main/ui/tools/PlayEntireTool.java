@@ -35,13 +35,13 @@ public class PlayEntireTool extends Tool {
 
     }
 
-    // MODIFIES: player
+
     // EFFECTS: take the BPM specified in CompositionPanel and return timer delay value in milliseconds.
     private int convertBPMtoGraphicsTimerDelay() {
         int bpm =  CompositionPanel.bpm;
         float beatsPerMs = ((float) bpm / (float) MILLISECONDS_PER_MINUTE);
         float ticksPerMs = beatsPerMs * (float) Composition.resolution;
-        float screenCoordinatesPerMs = ticksPerMs * CompositionPanel.beatWidth; // tickwidth
+        float screenCoordinatesPerMs = ticksPerMs * CompositionPanel.tickWidth; // beatWidth
         int timerDelay = Math.round(1 / screenCoordinatesPerMs);
         return timerDelay;
     }
@@ -59,17 +59,11 @@ public class PlayEntireTool extends Tool {
     private void play() {
         int masterTimerDelay = convertBPMtoGraphicsTimerDelay();
         int playerTimerDelay = convertBPMtoPlayerTimerDelay();
-        int compromisePlayerTimerDelay = masterTimerDelay * CompositionPanel.beatWidth;
-       // editor.getMasterTimer().setDelay(masterTimerDelay);
-
-        final Timer newMasterTimer = new Timer(5 * masterTimerDelay, null);
-        final Timer playerTimer = new Timer(compromisePlayerTimerDelay, null);
-
-
+        final Timer newMasterTimer = new Timer(masterTimerDelay, null);
+        final Timer playerTimer = new Timer(playerTimerDelay, null);
 
         player.setTimer(playerTimer);
         editor.setMasterTimer(newMasterTimer);
-
 
         playerTimer.addActionListener(player);
         //playerTimer.addActionListener(editor.getCompositionPanel());

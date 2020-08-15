@@ -106,5 +106,10 @@ class CompositionTest {
         assertNull(piece.getMeasureAtBeat(13));
     }
 
+    @Test
+    public void testGetNotesAtTick() {
+       
+    }
+
 
 }
