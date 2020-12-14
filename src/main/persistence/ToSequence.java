@@ -19,7 +19,7 @@ public class ToSequence {
     public static Sequence toSequence(Composition composition) throws InvalidMidiDataException {
         int beatNum = composition.getBeatNum();
         int beatType = composition.getBeatType();
-        Sequence sequence = new Sequence(Sequence.PPQ,ticksPerBeat);
+        Sequence sequence = new Sequence(Sequence.PPQ, composition.getResolution());
         Track track = sequence.createTrack();
         setTempo(track);
         setTimeSignature(track, beatNum, beatType);

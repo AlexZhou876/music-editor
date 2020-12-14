@@ -279,4 +279,7 @@ public class Composition  { // used to extend JPanel
     }
 
 
+    public int getResolution() {
+        return resolution;
+    }
 }

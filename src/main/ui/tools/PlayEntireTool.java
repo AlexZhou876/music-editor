@@ -89,7 +89,7 @@ public class PlayEntireTool extends Tool {
             sequencer = MidiSystem.getSequencer();
             sequencer.open();
             //synthesizer = (Synthesizer)sequencer;
-            sequencer.setTempoInBPM(convertBPMtoPlayerTimerDelay());
+            sequencer.setTempoInBPM(CompositionPanel.bpm);
             sequencer.setSequence(s);
             sequencer.start();
         } catch (InvalidMidiDataException | MidiUnavailableException e) {
