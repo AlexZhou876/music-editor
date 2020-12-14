@@ -6,6 +6,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import static ui.CompositionPanel.*;
 // consider splitting graphical responsibilities into new class
 
@@ -13,19 +14,19 @@ import static ui.CompositionPanel.*;
 // of measures in the composition.
 public class Composition  { // used to extend JPanel
     private List<Measure> listOfMeasure;
-    //private int beatsPerMinute;
     private int beatNum;
     private int beatType;
     private int barWidth; // implement later
     public static int resolution = 4;
     // the resolution is the number of ticks per quarter beat.
 
+    private Map<Integer, List<Note>> noteMap;
+    private Map<Integer, Measure> measureMap;
+
 
     // REQUIRES: beatType is a power of 2
     // EFFECTS: instantiates a new composition with numMeasures measures, beatNum beats of type beatType per measure.
     public Composition(int numMeasures, int beatNum, int beatType) {
-        //super();
-        //setBackground(Color.black);
         this.beatNum = beatNum;
         this.beatType = beatType;
         listOfMeasure = new ArrayList<Measure>();

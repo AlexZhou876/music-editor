@@ -6,6 +6,7 @@ import ui.CompositionPanel;
 import ui.tools.PlayEntireTool;
 
 import javax.swing.*;
+import javax.sound.midi.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -14,11 +15,11 @@ import java.util.Observable;
 
 // this is a subject (because scrolling follows the progress of the playing line)
 public class EntirePlayer implements ActionListener {
-    private CompositionPanel compositionPanel;
     private Composition composition;
     private PlayEntireTool tool;
     private Timer timer;
     private int playingTick;
+    private int stepSize;
 
     private List<Note> lastTickPlayed;
     private List<Note> notesAtTick;
@@ -55,6 +56,10 @@ public class EntirePlayer implements ActionListener {
         this.playingTick = playingTick;
     }
 
+    public void setStepSize(int stepSize) {
+        this.stepSize = stepSize;
+    }
+
     // MODIFIES: this
     // EFFECTS:  plays notes in current column, repaints, increments column,  stops if done
     //           this class is the listener for the timer object, and this method is what the timer calls
@@ -65,13 +70,15 @@ public class EntirePlayer implements ActionListener {
         incrementTick();
         stopPlayingWhenDone();
     }
-
+/*
     // MODIFIES: CompositionPanel
     // EFFECTS: sets the x coordinate of the displayed playing progress line to ensure it is in sync with the audio.
     public void correctProgressLine() {
         int playLineColumn = playingTick * CompositionPanel.beatWidth;
         compositionPanel.setPlayLineColumn(playLineColumn);
     }
+
+ */
 
     public void setComposition(Composition composition) {
         this.composition = composition;

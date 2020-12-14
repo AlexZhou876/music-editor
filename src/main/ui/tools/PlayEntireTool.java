@@ -1,16 +1,23 @@
 package ui.tools;
 
+
+
 import ui.CompositionPanel;
 import model.Composition;
 import ui.GraphicalEditorApp;
 import ui.players.EntirePlayer;
+import persistence.ToSequence;
 
+import javax.sound.midi.*;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 // this is an observer class. It observes EntirePlayer. Consider observer pattern
 public class PlayEntireTool extends Tool {
+    private Sequencer sequencer;
+    private Synthesizer synthesizer;
     private boolean playing;
     private EntirePlayer player;
     private Timer timer;
@@ -57,8 +64,11 @@ public class PlayEntireTool extends Tool {
 
     // EFFECTS: plays the entire composition from the beginning.
     private void play() {
+
         int masterTimerDelay = convertBPMtoGraphicsTimerDelay();
         int playerTimerDelay = convertBPMtoPlayerTimerDelay();
+/*
+
         final Timer newMasterTimer = new Timer(masterTimerDelay, null);
         final Timer playerTimer = new Timer(playerTimerDelay, null);
 
@@ -73,26 +83,46 @@ public class PlayEntireTool extends Tool {
         playerTimer.start();
         newMasterTimer.setInitialDelay(0);
         newMasterTimer.start();
+         */
+        try {
+            Sequence s = ToSequence.toSequence(editor.getCompositionPanel().getComposition());
+            sequencer = MidiSystem.getSequencer();
+            sequencer.open();
+            //synthesizer = (Synthesizer)sequencer;
+            sequencer.setTempoInBPM(convertBPMtoPlayerTimerDelay());
+            sequencer.setSequence(s);
+            sequencer.start();
+        } catch (InvalidMidiDataException | MidiUnavailableException e) {
+            e.printStackTrace();
+        }
+
     }
+
 
     // EFFECTS: Stop the playing and set playing to false.
     public void stop() {
         //playing = false;
+        /*
         player.stopPlaying();
         editor.getCompositionPanel().stopPlaying();
         player.setPlaying(false);
         button.setText("Play!");
+
+         */
+        sequencer.stop();
+        playing = false;
+        button.setText("Play!");
+
     }
 
     private class PlayEntireToolClickHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (player.isPlaying()) {
+            if (playing) {
                 stop();
                 return;
             }
-            //playing = true;
-            player.setPlaying(true);
+            playing = true;
             editor.setActiveTool(PlayEntireTool.this);
             button.setText("Stop");
             editor.repaint();
