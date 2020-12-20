@@ -14,14 +14,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-// this is an observer class. It observes EntirePlayer. Consider observer pattern
-public class PlayEntireTool extends Tool {
+// observer pattern?
+public class PlayEntireTool extends Tool implements MetaEventListener {
     private Sequencer sequencer;
     private Synthesizer synthesizer;
     private boolean playing;
     private EntirePlayer player;
     private Timer timer;
     public static final int MILLISECONDS_PER_MINUTE = 60000;
+    public static final int GRAPHICS_TIMER_DELAY = 10;
+    public static final int END_OF_TRACK = 0x2F;
 
     public PlayEntireTool(GraphicalEditorApp editor, JComponent parent, EntirePlayer player) {
         super(editor, parent);
@@ -64,13 +66,10 @@ public class PlayEntireTool extends Tool {
 
     // EFFECTS: plays the entire composition from the beginning.
     private void play() {
+        final Timer newMasterTimer = new Timer(GRAPHICS_TIMER_DELAY, null);
 
-        int masterTimerDelay = convertBPMtoGraphicsTimerDelay();
-        int playerTimerDelay = convertBPMtoPlayerTimerDelay();
-/*
-
-        final Timer newMasterTimer = new Timer(masterTimerDelay, null);
-        final Timer playerTimer = new Timer(playerTimerDelay, null);
+        editor.setMasterTimer(newMasterTimer);
+        /*
 
         player.setTimer(playerTimer);
         editor.setMasterTimer(newMasterTimer);
@@ -84,17 +83,25 @@ public class PlayEntireTool extends Tool {
         newMasterTimer.setInitialDelay(0);
         newMasterTimer.start();
          */
+        newMasterTimer.addActionListener(editor.getCompositionPanel());
         try {
             Sequence s = ToSequence.toSequence(editor.getCompositionPanel().getComposition());
             sequencer = MidiSystem.getSequencer();
+            editor.getCompositionPanel().setSequencer(sequencer);
+            sequencer.addMetaEventListener(this);
             sequencer.open();
             //synthesizer = (Synthesizer)sequencer;
             sequencer.setTempoInBPM(CompositionPanel.bpm);
             sequencer.setSequence(s);
             sequencer.start();
+
+            newMasterTimer.setInitialDelay(0);
+            newMasterTimer.start();
+
         } catch (InvalidMidiDataException | MidiUnavailableException e) {
             e.printStackTrace();
         }
+        // note: busy waiting for sequence end will not work with only one thread.
 
     }
 
@@ -110,9 +117,18 @@ public class PlayEntireTool extends Tool {
 
          */
         sequencer.stop();
+        editor.getCompositionPanel().stopPlaying();
         playing = false;
         button.setText("Play!");
 
+    }
+
+    @Override
+    // event handler triggered by sequencer when MetaMessage encountered
+    public void meta(MetaMessage meta) {
+        if (meta.getType() == END_OF_TRACK) {
+            stop();
+        }
     }
 
     private class PlayEntireToolClickHandler implements ActionListener {
@@ -127,6 +143,13 @@ public class PlayEntireTool extends Tool {
             button.setText("Stop");
             editor.repaint();
             play();
+        }
+    }
+
+    private class FinishedPlayingHandler implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            stop();
         }
     }
 }

@@ -81,10 +81,12 @@ public class Note {
         noteChanges = newGlobalStart != globalStart || newPitch != pitch;
         if (noteChanges && inBounds(newGlobalEnd, newPitch)) {
             changeAssignedMeasure(newGlobalStart);
-            stopPlaying();
             globalStart = newGlobalStart;
-            pitch = newPitch;
-            play();
+            if (newPitch != pitch) {
+                stopPlaying();
+                pitch = newPitch;
+                play();
+            }
         }
     }
 

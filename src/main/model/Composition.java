@@ -17,7 +17,7 @@ public class Composition  { // used to extend JPanel
     private int beatNum;
     private int beatType;
     private int barWidth; // implement later
-    public static int resolution = 4;
+    public static int resolution = 4; //4
     // the resolution is the number of ticks per quarter beat.
 
     private Map<Integer, List<Note>> noteMap;
@@ -99,6 +99,18 @@ public class Composition  { // used to extend JPanel
             }
         }
         return 0; //this should throw an exception probably
+    }
+
+    // EFFECTS: returns the global start tick of the given measure number.
+    public int getGlobalStartOf(int measure) throws Exception {
+        if (measure < 1 || measure > getNumMeasures()) {
+            throw new Exception("tried to get start tick of measure out of bounds");
+        }
+        int output = 0;
+        for (int i = 0; i < measure - 1; i++) {
+            output += getMeasure(i).getNumTicks();
+        }
+        return output; //this should throw an exception probably
     }
 
     // EFFECTS: returns the note at a given point in composition, if any.

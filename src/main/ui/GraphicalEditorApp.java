@@ -22,7 +22,7 @@ public class GraphicalEditorApp extends JFrame {
     public static final int HEIGHT = SEMITONE_HEIGHT * 88;
     //public static final int HEIGHT = SEMITONE_HEIGHT * 70;
     //public static final String SAVE_FILE = "./data/saveFile.mid";
-    public static final String SAVE_FILE = "./data/bwv772.mid";
+    public static final String SAVE_FILE = "./data/Gurenge.mid";
 
     private MidiSynth midiSynth;
     private EntirePlayer player;
@@ -72,20 +72,20 @@ public class GraphicalEditorApp extends JFrame {
                 null,
                 options,
                 options[1]);
-        if (n == closedOption) {
+        if (n == closedOption || n == no) {
             return;
         } else if (n == yes) {
-            loadProject();
-        } else {
-            return;
+            String input = JOptionPane.showInputDialog(this,
+                    "Specify the path.", SAVE_FILE);
+            loadProject(input);
         }
     }
 
     // MODIFIES: this
     // EFFECTS: changes composition to the one contained in the save file
-    private void loadProject() {
+    private void loadProject(String path) {
 
-        compositionPanel.setComposition(Reader.readFile(new File(SAVE_FILE)));
+        compositionPanel.setComposition(Reader.readFile(new File(path)));
         compositionPanel.getComposition().addMidiSynthToAll(midiSynth);
         // important!!
         player.setComposition(compositionPanel.getComposition());

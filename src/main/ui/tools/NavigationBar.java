@@ -110,13 +110,16 @@ public class NavigationBar extends JToolBar {
         public void actionPerformed(ActionEvent e) {
             try {
                 int measure = Integer.parseInt(playFromNum.getText());
-                int start = beatWidth
-                        * (parent.getCompositionPanel().getComposition().getMeasure(measure).getGlobalStartTick() - 1);
+                int start = parent.getCompositionPanel().getComposition().getGlobalStartOf(measure);
                 parent.getCompositionPanel().setPlayLineColumn(start);
-                parent.getPlayer().setPlayingTick(start);
+                //parent.getPlayer().setPlayingTick(start);
 
 
-            } catch (NumberFormatException exc) {
+            } catch (NumberFormatException nfe) {
+                // TODO: open dialog saying invalid number entry
+                nfe.printStackTrace();
+            } catch (Exception exc) {
+                // this one is supposed to be for the measure out of bounds
                 exc.printStackTrace();
             }
         }

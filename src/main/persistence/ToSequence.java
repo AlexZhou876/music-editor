@@ -14,7 +14,7 @@ import static persistence.Reader.MIDI_A0_VALUE;
 
 public class ToSequence {
     private static int ticksPerBeat = 24;
-    private static int ARBITRARY_BUFFER = 10;
+    private static int ARBITRARY_BUFFER = 0;
 
     public static Sequence toSequence(Composition composition) throws InvalidMidiDataException {
         int beatNum = composition.getBeatNum();
@@ -59,8 +59,8 @@ public class ToSequence {
                 ShortMessage noteOff = new ShortMessage();
                 noteOff.setMessage(0x80, pitch, 0);
                 //long startTime = (i  * beatNum + n.getStart()) * ticksPerBeat - ticksPerBeat;
-                long startTime = (n.getGlobalStart() - 1) * ticksPerBeat;
-                long endTime = (n.getGlobalStart() - 1 + n.getValue()) * ticksPerBeat;
+                long startTime = (n.getGlobalStart() - 1); //* ticksPerBeat;
+                long endTime = (n.getGlobalStart() - 1 + n.getValue());// * ticksPerBeat;
                 //long endTime = (i * beatNum + n.getStart() + n.getValue()) * ticksPerBeat - ticksPerBeat;
                 // - ticksPerBeat to adjust since beat 1 in midi is tick 0, not tick ticksPerBeat
                 output.add(new MidiEvent(noteOn, startTime));

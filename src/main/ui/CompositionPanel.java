@@ -8,12 +8,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import javax.sound.midi.*;
 
 // a beat refers to a quarter beat.
 public class CompositionPanel extends JPanel implements ActionListener, Scrollable {
     private int playLineColumn;
     private GraphicalEditorApp editor;
     private Composition composition;
+    private Sequencer sequencer;
 
     public static final int DEFAULT_BPM = 80;
 
@@ -37,15 +39,17 @@ public class CompositionPanel extends JPanel implements ActionListener, Scrollab
         bpm = DEFAULT_BPM;
     }
 
+    public void setSequencer(Sequencer s) {
+        sequencer = s;
+    }
+
     @Override
     // MODIFIES: this
-    // EFFECTS: update this every time the timer fires by incrementing playLineColumn by one screen coordinate
-    // and scroll following.
+    // EFFECTS: set playLineColumn to sequencer's current tick position equivalent and scroll following
     public void actionPerformed(ActionEvent e) {
-        playLineColumn += 1;
+        playLineColumn = (int)sequencer.getTickPosition() * tickWidth;
         repaint();
         followPlaying();
-        //if (editor.getMasterTimer().getDelay() == )
     }
 
     // MODIFIES: this
