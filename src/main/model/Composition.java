@@ -107,7 +107,7 @@ public class Composition  { // used to extend JPanel
             throw new Exception("tried to get start tick of measure out of bounds");
         }
         int output = 0;
-        for (int i = 0; i < measure - 1; i++) {
+        for (int i = 1; i < measure; i++) {
             output += getMeasure(i).getNumTicks();
         }
         return output; //this should throw an exception probably
@@ -192,7 +192,7 @@ public class Composition  { // used to extend JPanel
         return true;
     }
 
-    // REQUIRES: there is a measure at every position specified.
+    // REQUIRES: there is a measure at every position specified and there are no duplicates.
     // MODIFIES: this
     // EFFECTS: removes the specified measures from composition, and makes sure note positions and measure numbers
     // resulting are updated.

@@ -190,9 +190,13 @@ public class Reader {
         for (MidiEvent me: midiEvents) {
             byte[] message = me.getMessage().getMessage();
             if (message[1] == TIME_SIGNATURE_META_TYPE) {
-                beatNum = message[3]; //3
-                beatType = (int) Math.pow(2, message[4]);
-                return;
+                try {
+                    beatNum = message[3]; //3
+                    beatType = (int) Math.pow(2, message[4]);
+                    return;
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
             }
         }
         beatNum = 4;

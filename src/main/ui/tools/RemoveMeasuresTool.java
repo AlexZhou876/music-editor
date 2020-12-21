@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
 
 public class RemoveMeasuresTool extends Tool {
 
@@ -50,6 +51,8 @@ public class RemoveMeasuresTool extends Tool {
                 for (int i = 0; i < tempArray.length; i++) {
                     listOfPos.add(Integer.parseInt(tempArray[i]));
                 }
+                // remove duplicates from listOfPos
+                listOfPos = new ArrayList<>(new HashSet<>(listOfPos));
                 removeMeasures(listOfPos);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(editor, "Please enter positive integers only.");

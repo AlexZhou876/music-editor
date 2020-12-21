@@ -17,18 +17,13 @@ import java.awt.event.ActionListener;
 // observer pattern?
 public class PlayEntireTool extends Tool implements MetaEventListener {
     private Sequencer sequencer;
-    private Synthesizer synthesizer;
     private boolean playing;
-    private EntirePlayer player;
-    private Timer timer;
     public static final int MILLISECONDS_PER_MINUTE = 60000;
     public static final int GRAPHICS_TIMER_DELAY = 10;
     public static final int END_OF_TRACK = 0x2F;
 
     public PlayEntireTool(GraphicalEditorApp editor, JComponent parent, EntirePlayer player) {
         super(editor, parent);
-        //player = new EntirePlayer(editor.getCompositionPanel(), null, this);
-        this.player = player;
         playing = false;
     }
 
@@ -67,22 +62,7 @@ public class PlayEntireTool extends Tool implements MetaEventListener {
     // EFFECTS: plays the entire composition from the beginning.
     private void play() {
         final Timer newMasterTimer = new Timer(GRAPHICS_TIMER_DELAY, null);
-
         editor.setMasterTimer(newMasterTimer);
-        /*
-
-        player.setTimer(playerTimer);
-        editor.setMasterTimer(newMasterTimer);
-
-        playerTimer.addActionListener(player);
-        //playerTimer.addActionListener(editor.getCompositionPanel());
-        newMasterTimer.addActionListener(editor.getCompositionPanel());
-
-        playerTimer.setInitialDelay(0);
-        playerTimer.start();
-        newMasterTimer.setInitialDelay(0);
-        newMasterTimer.start();
-         */
         newMasterTimer.addActionListener(editor.getCompositionPanel());
         try {
             Sequence s = ToSequence.toSequence(editor.getCompositionPanel().getComposition());
@@ -90,9 +70,11 @@ public class PlayEntireTool extends Tool implements MetaEventListener {
             editor.getCompositionPanel().setSequencer(sequencer);
             sequencer.addMetaEventListener(this);
             sequencer.open();
-            //synthesizer = (Synthesizer)sequencer;
-            sequencer.setTempoInBPM(CompositionPanel.bpm);
+
+            //System.out.println(CompositionPanel.bpm);
             sequencer.setSequence(s);
+            sequencer.setTickPosition(editor.getPlayingStartTick());
+            sequencer.setTempoInBPM(CompositionPanel.bpm);
             sequencer.start();
 
             newMasterTimer.setInitialDelay(0);
@@ -108,14 +90,6 @@ public class PlayEntireTool extends Tool implements MetaEventListener {
 
     // EFFECTS: Stop the playing and set playing to false.
     public void stop() {
-        //playing = false;
-        /*
-        player.stopPlaying();
-        editor.getCompositionPanel().stopPlaying();
-        player.setPlaying(false);
-        button.setText("Play!");
-
-         */
         sequencer.stop();
         editor.getCompositionPanel().stopPlaying();
         playing = false;

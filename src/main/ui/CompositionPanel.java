@@ -13,6 +13,7 @@ import javax.sound.midi.*;
 // a beat refers to a quarter beat.
 public class CompositionPanel extends JPanel implements ActionListener, Scrollable {
     private int playLineColumn;
+    private int playLineColumnOrigin;
     private GraphicalEditorApp editor;
     private Composition composition;
     private Sequencer sequencer;
@@ -37,6 +38,7 @@ public class CompositionPanel extends JPanel implements ActionListener, Scrollab
         composition = new Composition(numMeasures, beatNum, beatType);
         this.editor = editor;
         bpm = DEFAULT_BPM;
+        playLineColumnOrigin = 0;
     }
 
     public void setSequencer(Sequencer s) {
@@ -56,7 +58,7 @@ public class CompositionPanel extends JPanel implements ActionListener, Scrollab
     // EFFECTS: stops the timer and resets the playLineColumn to 0.
     public void stopPlaying() {
         editor.getMasterTimer().stop();
-        playLineColumn = 0;
+        playLineColumn = playLineColumnOrigin;
         repaint();
     }
 
@@ -150,10 +152,18 @@ public class CompositionPanel extends JPanel implements ActionListener, Scrollab
         graphics.setColor(save);
     }
 
-    // MODIFIES: this
-    // EFFECTS: sets value of playLineColumn
     public void setPlayLineColumn(int target) {
         playLineColumn = target;
+    }
+
+    // MODIFIES: this
+    // EFFECTS: sets playLineColumn to position of start of measure# target
+    public void setPlayLineColumnMeasure(int target) {
+        try {
+            playLineColumn = composition.getGlobalStartOf(target) * tickWidth;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // MODIFIES: editor

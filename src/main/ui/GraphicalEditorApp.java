@@ -6,6 +6,9 @@ import ui.players.EntirePlayer;
 import ui.sound.MidiSynth;
 import ui.tools.*;
 
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Sequencer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -20,13 +23,13 @@ import static ui.CompositionPanel.SEMITONE_HEIGHT;
 public class GraphicalEditorApp extends JFrame {
     public static final int WIDTH = 1500;
     public static final int HEIGHT = SEMITONE_HEIGHT * 88;
-    //public static final int HEIGHT = SEMITONE_HEIGHT * 70;
-    //public static final String SAVE_FILE = "./data/saveFile.mid";
     public static final String SAVE_FILE = "./data/Gurenge.mid";
 
     private MidiSynth midiSynth;
     private EntirePlayer player;
     private Timer masterTimer;
+
+    private int playingStartTick;
 
     private CompositionPanel compositionPanel;
     private JScrollPane scroller;
@@ -51,10 +54,14 @@ public class GraphicalEditorApp extends JFrame {
         return compositionPanel;
     }
 
+    public int getPlayingStartTick() { return playingStartTick; }
+
+    public void setPlayingStartTick(int target) {  playingStartTick = target; }
+
     private void initFields() {
         activeTool = null;
         compositionPanel = new CompositionPanel(1, 4, 4, this);
-        //composition.addMeasures(1, 1, 4, 4);
+        playingStartTick = 0;
         tools = new ArrayList<Tool>();
     }
 
@@ -87,8 +94,6 @@ public class GraphicalEditorApp extends JFrame {
 
         compositionPanel.setComposition(Reader.readFile(new File(path)));
         compositionPanel.getComposition().addMidiSynthToAll(midiSynth);
-        // important!!
-        player.setComposition(compositionPanel.getComposition());
         repaint();
     }
 
@@ -153,10 +158,9 @@ public class GraphicalEditorApp extends JFrame {
         RemoveMeasuresTool removeMeasuresTool = new RemoveMeasuresTool(this, toolbar);
 
         masterTimer = new Timer(0, null);
-        player = new EntirePlayer(compositionPanel.getComposition(), null, null);
+        //player = new EntirePlayer(compositionPanel.getComposition(), null, null);
         PlayEntireTool playEntireTool = new PlayEntireTool(this, toolbar, player);
-        player.setTool(playEntireTool);
-        //player.setCompositionPanel(compositionPanel);
+
 
 
         SaveTool saveTool = new SaveTool(this, toolbar);

@@ -27,10 +27,10 @@ public class NavigationBar extends JToolBar {
         zoomIn = new JButton("+");
         zoomOut = new JButton("-");
         setZoom = new JButton("Set Zoom");
-        playFrom = new JButton("Play From");
+        playFrom = new JButton("Set Playback Start Measure");
         playFromNum = new JTextField();
         tempo = new JTextField();
-        setTempo = new JButton("Set Tempo (BPM)");
+        setTempo = new JButton("Set Tempo (QBPM)");
         this.parent = parent;
         add(button);
         add(field);
@@ -110,16 +110,17 @@ public class NavigationBar extends JToolBar {
         public void actionPerformed(ActionEvent e) {
             try {
                 int measure = Integer.parseInt(playFromNum.getText());
-                int start = parent.getCompositionPanel().getComposition().getGlobalStartOf(measure);
-                parent.getCompositionPanel().setPlayLineColumn(start);
-                //parent.getPlayer().setPlayingTick(start);
+                int startTick = parent.getCompositionPanel().getComposition().getGlobalStartOf(measure);
+                parent.getCompositionPanel().setPlayLineColumnMeasure(measure);
+                parent.setPlayingStartTick(startTick);
 
 
             } catch (NumberFormatException nfe) {
-                // TODO: open dialog saying invalid number entry
+                JOptionPane.showMessageDialog(parent, "Invalid Number Entry!");
                 nfe.printStackTrace();
             } catch (Exception exc) {
                 // this one is supposed to be for the measure out of bounds
+                JOptionPane.showMessageDialog(parent, "Invalid Measure Number!");
                 exc.printStackTrace();
             }
         }
