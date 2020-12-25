@@ -33,6 +33,10 @@ public abstract class Tool {
         parent.add(button);
     }
 
+    public void setComposition(Composition c) {
+        this.composition = c;
+    }
+
     protected abstract void addListener();
 
     // MODIFIES: this

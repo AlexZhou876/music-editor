@@ -34,7 +34,7 @@ public class GraphicalEditorApp extends JFrame {
     private CompositionPanel compositionPanel;
     private JScrollPane scroller;
 
-    private List<Tool> tools; // is this even useful??
+    private List<Tool> tools; // retain references to tools accessible from this class after initialization
     private Tool activeTool;
 
     public GraphicalEditorApp() {
@@ -91,9 +91,15 @@ public class GraphicalEditorApp extends JFrame {
     // MODIFIES: this
     // EFFECTS: changes composition to the one contained in the save file
     private void loadProject(String path) {
+        Composition c = Reader.readFile(new File(path));
 
-        compositionPanel.setComposition(Reader.readFile(new File(path)));
+        compositionPanel.setComposition(c);
         compositionPanel.getComposition().addMidiSynthToAll(midiSynth);
+        // must update Composition references in tools
+        for (Tool tool: tools) {
+            tool.setComposition(c);
+        }
+
         repaint();
     }
 
@@ -150,20 +156,25 @@ public class GraphicalEditorApp extends JFrame {
 
         AddNoteTool addNoteTool = new AddNoteTool(this, toolbar);
         tools.add(addNoteTool);
-// should I add the others to the list?? What is the point of the list?
+
         AddMeasuresTool addMeasuresTool = new AddMeasuresTool(this, toolbar);
+        tools.add(addMeasuresTool);
 
         EditNoteTool editNoteTool = new EditNoteTool(this, toolbar);
+        tools.add(editNoteTool);
 
         RemoveMeasuresTool removeMeasuresTool = new RemoveMeasuresTool(this, toolbar);
+        tools.add(removeMeasuresTool);
 
         masterTimer = new Timer(0, null);
         //player = new EntirePlayer(compositionPanel.getComposition(), null, null);
         PlayEntireTool playEntireTool = new PlayEntireTool(this, toolbar, player);
+        tools.add(playEntireTool);
 
 
 
         SaveTool saveTool = new SaveTool(this, toolbar);
+        tools.add(saveTool);
 
         setActiveTool(addNoteTool);
     }

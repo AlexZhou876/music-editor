@@ -8,6 +8,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import static ui.CompositionPanel.SEMITONE_HEIGHT;
+import static ui.CompositionPanel.tickWidth;
+
 
 public class AddNoteTool extends Tool {
     private Note note;
@@ -68,23 +71,17 @@ public class AddNoteTool extends Tool {
     // EFFECTS: instantiates the new note
     // pitch counts from bottom while y coordinate counts from top
     private void createNote(MouseEvent e) {
-        /*
-        int pitch =  88 - ((int) e.getPoint().getY()) / SEMITONE_HEIGHT;
-        measure = getMeasureWithX((int) e.getPoint().getX());
-        int globalStart = 1 + ((int) e.getPoint().getX()) / tickWidth;
-
-        note = new Note(measure, globalStart, 1, pitch, editor.getMidiSynth());
-
-         */
-
-
         Point p = compositionPanel.graphicsPointToModelPoint(e.getPoint());
         System.out.println(p);
         note = composition.addNoteAtPoint(p, 1);
 
 
 
+
+
+
     }
+
 
 
     private class AddNoteToolClickHandler implements ActionListener {
