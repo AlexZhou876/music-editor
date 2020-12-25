@@ -166,6 +166,7 @@ public class Measure {
 
     // EFFECTS: returns the number of ticks in this measure
     public int getNumTicks() {
+
         return Composition.resolution / beatType * 4 * beatNumber;
     }
 

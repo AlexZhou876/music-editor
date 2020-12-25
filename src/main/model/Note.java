@@ -69,15 +69,18 @@ public class Note {
         return globalStart <= tick && tick < (globalStart + value);
     }
 
+
+
     // MODIFIES: this
     // EFFECTS:  If the point dragged to indicates a different location for the note selected than where it already is,
     //           move the note to that location. Manage the playing of the note during the transition.
     // assume for now that notes lock to ticks rather than any larger beats or nudge widths.
     public void move(Point draggedTo) {
         boolean noteChanges;
-        int newGlobalStart = 1 + ((int) draggedTo.getX()) / tickWidth;
-        int newGlobalEnd = newGlobalStart + value;
-        int newPitch = 88 - ((int) draggedTo.getY()) / SEMITONE_HEIGHT;
+        int newGlobalStart = (int)draggedTo.getX();
+        int newGlobalEnd = (int)draggedTo.getX() + value;
+        int newPitch = (int)draggedTo.getY();
+
         noteChanges = newGlobalStart != globalStart || newPitch != pitch;
         if (noteChanges && inBounds(newGlobalEnd, newPitch)) {
             changeAssignedMeasure(newGlobalStart);
@@ -196,22 +199,12 @@ public class Note {
         return MIDI_A0_VALUE + pitch;
     }
 
-    // REQUIRES: x coordinate of point > x coordinate of the note (remove)
-    // MODIFIES: this
-    // EFFECTS: sets the right edge of note to the indicated value
-    /*
-    public void setBounds(double x) {
-        value = ((int) (x - globalStart * BEAT_WIDTH)) / BEAT_WIDTH + 1;
-    }
-
-     */
 
     // MODIFIES: this
-    // EFFECTS: changes the value of this note depending on coordinate dragged to. If dragged left of start or right of
+    // EFFECTS: changes the value of this note depending on tick dragged to. If dragged left of start or right of
     // composition end, throw InvalidTargetValue.
-    public void setBounds(double draggedToX) throws InvalidTargetValue {
-        int globalEnd = 2 + ((int) (draggedToX / tickWidth));
-        // why +2: imagine if draggedToX/BEAT_WIDTH = 0. Then the note starts on 1 and ends on 2.
+    public void setBounds(int draggedToX) throws InvalidTargetValue {
+        int globalEnd = 1 + draggedToX;
         if (globalEnd - 1 < globalStart || globalEnd - 1 > measure.getComposition().getNumTicks()) {
             throw new InvalidTargetValue();
         }

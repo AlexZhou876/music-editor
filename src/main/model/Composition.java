@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import static ui.CompositionPanel.*;
+//import static ui.CompositionPanel.*;
+import static ui.GraphicalEditorApp.*;
 // consider splitting graphical responsibilities into new class
 
 // represents an entire composition, which is a collection of measures. The order of measures in the list is the order
@@ -74,14 +75,14 @@ public class Composition  { // used to extend JPanel
         }
     }
 
-    // EFFECTS: returns array containing the x screen coordinates of all measure lines in the composition.
-    public List<Integer> getPositionsOfMeasureLines() {
+    // EFFECTS: returns list containing the x screen coordinates of all measure lines in the composition.
+    public List<Integer> getTickPositionsOfMeasureLines() {
         List<Integer> output = new ArrayList<Integer>();
         output.add(0);
         int tickCount = 0;
         for (Measure m: listOfMeasure) {
             tickCount += m.getNumTicks();
-            output.add(tickCount * tickWidth);
+            output.add(tickCount);
         }
         return output;
     }
@@ -125,19 +126,13 @@ public class Composition  { // used to extend JPanel
         return null;
     }
 
-    // EFFECTS: returns list of notes at a given column in the composition.
-
-    public List<Note> getNotesAtColumn(int x) {
-        List<Note> notesAtColumn = new ArrayList<Note>();
-        for (Measure m: listOfMeasure) {
-            for (Note note : m.getListOfNote()) {
-                if (note.containsX(x)) {
-                    notesAtColumn.add(note);
-                }
-            }
-        }
-        return notesAtColumn;
+    // MODIFIES: this
+    // EFFECTS: adds a note at specified pitch, tick, with specified value, and returns it
+    public Note addNoteAtPoint(Point p, int value) {
+        return new Note(getMeasureAtTick(p.x), p.x, value, p.y, midiSynth);
     }
+
+
 
     // EFFECTS: returns list of notes at a given tick in the composition.
     public List<Note> getNotesAtTick(int tick) {

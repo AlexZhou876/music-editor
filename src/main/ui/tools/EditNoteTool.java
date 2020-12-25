@@ -20,15 +20,15 @@ public class EditNoteTool extends Tool {
     public EditNoteTool(GraphicalEditorApp editor, JComponent parent) {
         super(editor, parent);
 
-        editor.getCompositionPanel().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        compositionPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, true), "incrementValue");
-        editor.getCompositionPanel().getActionMap().put("incrementValue", new IncrementValue());
-        editor.getCompositionPanel().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        compositionPanel.getActionMap().put("incrementValue", new IncrementValue());
+        compositionPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, true), "decrementValue");
-        editor.getCompositionPanel().getActionMap().put("decrementValue", new DecrementValue());
-        editor.getCompositionPanel().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+        compositionPanel.getActionMap().put("decrementValue", new DecrementValue());
+        compositionPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true), "delete");
-        editor.getCompositionPanel().getActionMap().put("delete", new Delete());
+        compositionPanel.getActionMap().put("delete", new Delete());
 
 
     }
@@ -50,7 +50,7 @@ public class EditNoteTool extends Tool {
     // Otherwise do nothing.
     @Override
     public void mousePressed(MouseEvent e) {
-        Note newNote = editor.getCompositionPanel().getComposition().getNoteAtPoint(e.getPoint());
+        Note newNote = composition.getNoteAtPoint(e.getPoint());
         /*
         note = editor.getComposition().getNoteAtPoint(e.getPoint());
         if (note != null) {
@@ -75,7 +75,8 @@ public class EditNoteTool extends Tool {
     @Override
     public void mouseDragged(MouseEvent e) {
         if (note != null) {
-            note.move(e.getPoint());
+            Point modelP = compositionPanel.graphicsPointToModelPoint(e.getPoint());
+            note.move(modelP);
         }
     }
 
@@ -130,7 +131,7 @@ public class EditNoteTool extends Tool {
         @Override
         public void actionPerformed(ActionEvent e) {
             editor.setActiveTool(EditNoteTool.this);
-            //editor.getCompositionPanel().requestFocus();
+            //compositionPanel.requestFocus();
         }
     }
 

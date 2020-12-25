@@ -2,9 +2,9 @@ package ui.tools;
 
 import model.Composition;
 import ui.GraphicalEditorApp;
+import ui.CompositionPanel;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
@@ -12,6 +12,8 @@ public abstract class Tool {
     protected JButton button;
     protected GraphicalEditorApp editor;
     private boolean active;
+    protected Composition composition;
+    protected CompositionPanel compositionPanel;
 
     public Tool(GraphicalEditorApp editor, JComponent parent) {
         this.editor = editor;
@@ -19,6 +21,8 @@ public abstract class Tool {
         addToParent(parent);
         active = false;
         addListener();
+        composition = editor.getCompositionPanel().getComposition();
+        compositionPanel = editor.getCompositionPanel();
     }
 
     // EFFECTS: creates button to activate tool

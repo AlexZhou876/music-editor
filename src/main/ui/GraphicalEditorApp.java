@@ -25,7 +25,7 @@ public class GraphicalEditorApp extends JFrame {
     public static final int HEIGHT = SEMITONE_HEIGHT * 88;
     public static final String SAVE_FILE = "./data/Gurenge.mid";
 
-    private MidiSynth midiSynth;
+    public static MidiSynth midiSynth;
     private EntirePlayer player;
     private Timer masterTimer;
 

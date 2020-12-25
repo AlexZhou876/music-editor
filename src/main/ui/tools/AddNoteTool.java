@@ -2,10 +2,10 @@ package ui.tools;
 
 import exceptions.InvalidTargetValue;
 import model.*;
-import static ui.CompositionPanel.*;
 import ui.GraphicalEditorApp;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 
@@ -41,17 +41,6 @@ public class AddNoteTool extends Tool {
     public void mousePressed(MouseEvent e) {
         createNote(e);
         note.selectAndPlay();
-        /*
-        try {
-            note.setBounds(e.getPoint().getX());
-        } catch (InvalidTargetValue invalidTargetValue) {
-            invalidTargetValue.printStackTrace();
-        }
-        // editor.getComposition().addMeasure(measure);
-
-         */
-
-
     }
 
     // MODIFIES: this
@@ -60,7 +49,8 @@ public class AddNoteTool extends Tool {
     public void mouseDragged(MouseEvent e) {
         if (e.getPoint().getX() < editor.getCompositionPanel().getEnd()) {
             try {
-                note.setBounds(e.getPoint().getX());
+                Point modelP = compositionPanel.graphicsPointToModelPoint(e.getPoint());
+                note.setBounds((int)modelP.getX());
             } catch (InvalidTargetValue invalidTargetValue) {
                 invalidTargetValue.printStackTrace();
             }
@@ -78,27 +68,24 @@ public class AddNoteTool extends Tool {
     // EFFECTS: instantiates the new note
     // pitch counts from bottom while y coordinate counts from top
     private void createNote(MouseEvent e) {
+        /*
         int pitch =  88 - ((int) e.getPoint().getY()) / SEMITONE_HEIGHT;
         measure = getMeasureWithX((int) e.getPoint().getX());
         int globalStart = 1 + ((int) e.getPoint().getX()) / tickWidth;
+
         note = new Note(measure, globalStart, 1, pitch, editor.getMidiSynth());
+
+         */
+
+
+        Point p = compositionPanel.graphicsPointToModelPoint(e.getPoint());
+        System.out.println(p);
+        note = composition.addNoteAtPoint(p, 1);
+
+
+
     }
 
-    /*
-    // EFFECTS: takes the x screen coordinate of the click and returns the measure it falls into.
-    // Warning: assumes beats have uniform number of ticks.
-    private Measure getMeasureWithX(int x) {
-        int beat = 1 + x / beatWidth;
-        return editor.getCompositionPanel().getComposition().getMeasureAtBeat(beat);
-    }
-
-     */
-
-    // EFFECTS: takes x screen coordinate of the click and returns the measure it falls into.
-    private Measure getMeasureWithX(int x) {
-        int tick = 1 + x / tickWidth;
-        return editor.getCompositionPanel().getComposition().getMeasureAtTick(tick);
-    }
 
     private class AddNoteToolClickHandler implements ActionListener {
 
