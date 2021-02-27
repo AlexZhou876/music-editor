@@ -50,7 +50,7 @@ public class EditNoteTool extends Tool {
     // Otherwise do nothing.
     @Override
     public void mousePressed(MouseEvent e) {
-        Note newNote = composition.getNoteAtPoint(e.getPoint());
+        Note newNote = composition.getNoteAtPoint(compositionPanel.graphicsPointToModelPoint(e.getPoint()));
         /*
         note = editor.getComposition().getNoteAtPoint(e.getPoint());
         if (note != null) {
@@ -92,6 +92,9 @@ public class EditNoteTool extends Tool {
         }
 
          */
+        // deactivated for UX purposes. But should be subject to configuration
+
+
     }
 
     // EFFECTS: unselects the note; called when tool switches.
@@ -170,7 +173,8 @@ public class EditNoteTool extends Tool {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (EditNoteTool.this.isActive()) {
-                note.getMeasure().removeNote(note);
+                //note.getMeasure().removeNote(note);
+                note.unassignFromMeasure();
                 note.unselectAndStopPlaying();
                 editor.repaint();
             }

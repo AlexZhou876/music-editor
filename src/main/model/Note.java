@@ -5,6 +5,8 @@ import ui.sound.MidiSynth;
 
 import java.awt.*;
 
+import static model.NoteName.*;
+import static model.Shift.*;
 import static ui.CompositionPanel.*;
 
 // class representing a music note, with starting time with respect to global ticks, note value
@@ -15,6 +17,8 @@ public class Note {
     public static final int MIDI_A0_VALUE = 21;
     public static final Color PLAYING = new Color(230, 158, 60);
     private Measure measure; //bidirectional association
+    private NoteName name;
+    private Shift shift;
     private int start;
     private int value;
     private int pitch;
@@ -30,6 +34,75 @@ public class Note {
         this.globalStart = start;
         this.value = value;
         this.pitch = pitch;
+        updateNameShift();
+    }
+
+    private void updateNameShift() {
+        switch (pitch % 12) {
+            case 0: {
+                name = A;
+                shift = Shift.Natural;
+                break;
+            }
+            case 1: {
+                name = A;
+                shift = Shift.Sharp;
+                break;
+            }
+            case 2: {
+                name = B;
+                shift = Shift.Natural;
+                break;
+            }
+            case 3: {
+                name = C;
+                shift = Shift.Natural;
+                break;
+            }
+            case 4: {
+                name = C;
+                shift = Shift.Sharp;
+                break;
+            }
+            case 5: {
+                name = D;
+                shift = Shift.Natural;
+                break;
+            }
+            case 6: {
+                name = D;
+                shift = Shift.Sharp;
+                break;
+            }
+            case 7: {
+                name = E;
+                shift = Shift.Natural;
+                break;
+            }
+            case 8: {
+                name = F;
+                shift = Shift.Natural;
+                break;
+            }
+            case 9: {
+                name = F;
+                shift = Shift.Sharp;
+                break;
+            }
+            case 10: {
+                name = G;
+                shift = Shift.Natural;
+                break;
+            }
+            case 11: {
+                name = G;
+                shift = Shift.Sharp;
+                break;
+            }
+
+
+
+        }
     }
 
     // EFFECTS: constructs a Note in a given measure, global start time, value, and pitch
@@ -41,6 +114,7 @@ public class Note {
         this.midiSynth = midiSynth;
         this.measure = measure;
         measure.addNote(this);
+        updateNameShift();
     }
 
     public void setMidiSynth(MidiSynth midiSynth) {
@@ -50,6 +124,8 @@ public class Note {
     // EFFECTS: returns true if the note contains the given point, false otherwise.
     // !!! code duplication with draw
     public boolean contains(Point point) {
+        return point.x >= globalStart && point.x <= globalStart + value && point.y == pitch;
+        /*
         int pointX = point.x;
         int pointY = point.y;
         int leftEdge = modelTimeToXCoord(globalStart);
@@ -57,6 +133,8 @@ public class Note {
         int bottomEdge = pitchToYCoord(pitch);
         int rightEdge = modelTimeToXCoord(globalStart + value);
         return pointX >= leftEdge && pointX <= rightEdge && pointY >= topEdge && pointY <= bottomEdge;
+
+         */
     }
 
     // EFFECTS: returns true if the x coordinate is within bounds of note; false otherwise
@@ -87,7 +165,9 @@ public class Note {
             globalStart = newGlobalStart;
             if (newPitch != pitch) {
                 stopPlaying();
-                pitch = newPitch;
+                setPitch(newPitch);
+                updateNameShift();
+                //pitch = newPitch;
                 play();
             }
         }
@@ -142,7 +222,11 @@ public class Note {
         graphics.fillRect(x, y, width, height);
         graphics.setColor(save);
         graphics.drawRect(x, y, width, height);
+        graphics.setColor(Color.red);
+        graphics.drawString(name.getString() + shift.getString(), x + width / 2, y + SEMITONE_HEIGHT / 2);
     }
+
+
 
     // MODIFIES: this, measure
     // EFFECTS: assigns given measure to this note and makes sure this is added to measure

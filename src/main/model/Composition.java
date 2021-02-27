@@ -114,7 +114,7 @@ public class Composition  { // used to extend JPanel
         return output; //this should throw an exception probably
     }
 
-    // EFFECTS: returns the note at a given point in composition, if any.
+    // EFFECTS: returns the note at a given point in composition, if none, return null.
     public Note getNoteAtPoint(Point point) {
         for (Measure measure : listOfMeasure) {
             for (Note note : measure.getListOfNote()) {
@@ -272,6 +272,15 @@ public class Composition  { // used to extend JPanel
         listOfMeasure.add(measure);
         measure.setMeasureNumber(listOfMeasure.size());
     }
+
+    /*
+    // remove param note from this. Return true if found and removed, false otherwise.
+    public boolean removeNote(Note note) {
+        note.unassignFromMeasure();
+
+    }
+    */
+
 
     public int getBeatNum() {
         return beatNum;

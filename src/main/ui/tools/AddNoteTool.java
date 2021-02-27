@@ -72,7 +72,6 @@ public class AddNoteTool extends Tool {
     // pitch counts from bottom while y coordinate counts from top
     private void createNote(MouseEvent e) {
         Point p = compositionPanel.graphicsPointToModelPoint(e.getPoint());
-        System.out.println(p);
         note = composition.addNoteAtPoint(p, 1);
 
 

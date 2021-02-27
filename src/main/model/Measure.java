@@ -1,5 +1,6 @@
 package model;
 
+import ui.CompositionPanel;
 import ui.sound.MidiSynth;
 
 import java.awt.*;
@@ -125,6 +126,8 @@ public class Measure {
 
     // EFFECTS: draws all notes in this measure.
     public void draw(Graphics graphics) {
+        graphics.setColor(Color.red);
+        graphics.drawString(Integer.toString(measureNumber), getGlobalStartTick() * CompositionPanel.tickWidth, 30);
         for (Note note : listOfNote) {
             note.draw(graphics);
         }

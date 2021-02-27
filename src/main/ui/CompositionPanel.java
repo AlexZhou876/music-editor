@@ -47,7 +47,7 @@ public class CompositionPanel extends JPanel implements ActionListener, Scrollab
     }
 
     // EFFECTS:
-    public Point graphicsPointToModelPoint(Point p) {
+    public static Point graphicsPointToModelPoint(Point p) {
         p.x = p.x / tickWidth + 1;
         p.y = NUM_TONES - p.y / SEMITONE_HEIGHT;
         return p;
@@ -129,12 +129,22 @@ public class CompositionPanel extends JPanel implements ActionListener, Scrollab
     // calls to repaint() get here
     @Override
     public void paintComponent(Graphics graphics) {
+        graphics.setFont(new Font("TimesRoman", Font.PLAIN, 30));
         super.paintComponent(graphics);
         drawLines(graphics);
         // it may be better for measure.draw to draw bar lines.
         for (Measure measure : composition.getListOfMeasure()) {
-            measure.draw(graphics);
+            if (inView(measure)) {
+                measure.draw(graphics);
+            }
         }
+    }
+
+    private boolean inView(Measure m) {
+        int x = editor.getScroller().getHorizontalScrollBar().getValue();
+        return (m.getGlobalStartTick() * tickWidth > x && m.getGlobalStartTick() * tickWidth < x + editor.WIDTH)
+                || ((m.getGlobalStartTick() + m.getNumTicks()) * tickWidth > x && (m.getGlobalStartTick() + m.getNumTicks()) * tickWidth < x + editor.WIDTH);
+
     }
 
     // EFFECTS: draws semitone lines and bar lines
