@@ -1,4 +1,4 @@
-<img src=media/musiceditordemo.gif alt="alt text" width="500" height="500">
+<img src=media/musiceditordemo.gif alt="alt text" width="800" height="500">
 
 
 # music-editor
