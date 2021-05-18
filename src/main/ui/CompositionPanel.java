@@ -1,7 +1,10 @@
 package ui;
 
+import com.sun.org.apache.bcel.internal.generic.Select;
 import model.Composition;
 import model.Measure;
+import ui.tools.SelectNoteTool;
+import ui.tools.Tool;
 
 import javax.swing.*;
 import java.awt.*;
@@ -138,6 +141,7 @@ public class CompositionPanel extends JPanel implements ActionListener, Scrollab
                 measure.draw(graphics);
             }
         }
+        editor.getActiveTool().render(graphics);
     }
 
     private boolean inView(Measure m) {

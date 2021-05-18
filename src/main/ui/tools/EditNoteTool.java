@@ -142,7 +142,7 @@ public class EditNoteTool extends Tool {
     private class IncrementValue extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (EditNoteTool.this.isActive()) {
+            if (EditNoteTool.this.isActive() && note != null) {
                 try {
                     note.resizeNote(note.getValue() + 1);
                 } catch (InvalidTargetValue invalidTargetValue) {
@@ -157,7 +157,7 @@ public class EditNoteTool extends Tool {
     private class DecrementValue extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (EditNoteTool.this.isActive()) {
+            if (EditNoteTool.this.isActive() && note != null) {
                 try {
                     note.resizeNote(note.getValue() - 1);
                 } catch (InvalidTargetValue invalidTargetValue) {
@@ -172,7 +172,7 @@ public class EditNoteTool extends Tool {
     private class Delete extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (EditNoteTool.this.isActive()) {
+            if (EditNoteTool.this.isActive() && note != null)  {
                 //note.getMeasure().removeNote(note);
                 note.unassignFromMeasure();
                 note.unselectAndStopPlaying();

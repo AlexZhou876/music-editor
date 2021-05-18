@@ -3,10 +3,8 @@ package model;
 import ui.sound.MidiSynth;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 //import static ui.CompositionPanel.*;
 import static ui.GraphicalEditorApp.*;
 // consider splitting graphical responsibilities into new class
@@ -125,6 +123,10 @@ public class Composition  { // used to extend JPanel
         }
         return null;
     }
+
+//    public List<Note> getNotesInRect(Point ul, Point br) {
+//
+//    }
 
     // MODIFIES: this
     // EFFECTS: adds a note at specified pitch, tick, with specified value, and returns it

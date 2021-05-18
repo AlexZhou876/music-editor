@@ -1,8 +1,13 @@
 package ui.tools;
 
 import model.Composition;
+import model.Note;
 import ui.GraphicalEditorApp;
 import ui.CompositionPanel;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -14,6 +19,7 @@ public abstract class Tool {
     private boolean active;
     protected Composition composition;
     protected CompositionPanel compositionPanel;
+    protected List<Note> selected;
 
     public Tool(GraphicalEditorApp editor, JComponent parent) {
         this.editor = editor;
@@ -23,10 +29,15 @@ public abstract class Tool {
         addListener();
         composition = editor.getCompositionPanel().getComposition();
         compositionPanel = editor.getCompositionPanel();
+        selected = new ArrayList<>();
     }
 
     // EFFECTS: creates button to activate tool
     protected abstract void createButton(JComponent parent);
+
+    public void render(Graphics g) {
+        
+    }
 
     // EFFECTS: adds button to parent component
     public void addToParent(JComponent parent) {

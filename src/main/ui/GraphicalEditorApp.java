@@ -1,5 +1,6 @@
 package ui;
 
+import com.sun.org.apache.bcel.internal.generic.Select;
 import model.Composition;
 import persistence.Reader;
 import ui.players.EntirePlayer;
@@ -45,6 +46,8 @@ public class GraphicalEditorApp extends JFrame {
         showInitDialog();
         initInteraction();
     }
+
+    public Tool getActiveTool() { return activeTool; }
 
     public MidiSynth getMidiSynth() {
         return midiSynth;
@@ -153,6 +156,9 @@ public class GraphicalEditorApp extends JFrame {
         toolbar.setLayout(new GridLayout(0, 1));
         toolbar.setSize((new Dimension(0, 0)));
         add(toolbar, BorderLayout.EAST);
+
+        SelectNoteTool snt = new SelectNoteTool(this, toolbar);
+        tools.add(snt);
 
         AddNoteTool addNoteTool = new AddNoteTool(this, toolbar);
         tools.add(addNoteTool);
